@@ -2,11 +2,13 @@
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.backends import ModelBackend
+from django.contrib.auth.hashers import make_password
 from django.db.models import Q
 from django.views.generic.base import View
 
 from .models import UserProfile
-from .forms import LoginForm
+from .forms import LoginForm, RegisterForm
+from utils.email_send import send_register_email
 
 
 class CustomBackend(ModelBackend):
@@ -26,22 +28,44 @@ class LoginView(View):
         return render(request, 'login.html')
 
     def post(self, request):
-        form = LoginForm(request.POST)
-        if form.is_valid():
+        login_form = LoginForm(request.POST)
+        if login_form.is_valid():
             username = request.POST.get('username', '')
             password = request.POST.get('password', '')
+            # 尝试认证用户并返回user
             user = authenticate(username=username, password=password)
             if user:
                 login(request, user)
                 return render(request, 'index.html')
             else:
                 return render(request, 'login.html', {'msg': '用户名或密码错误'})
+        # 表单字段未验证通过
         else:
-            return render(request, 'login.html', {'form': form})
+            return render(request, 'login.html', {'login_form': login_form})
 
 
 class RegisterView(View):
     """用户注册"""
 
     def get(self, request):
-        return render(request, 'register.html')
+        register_form = RegisterForm()
+        return render(request, 'register.html', {'register_form': register_form})
+
+    def post(self, request):
+        register_form = RegisterForm(request.POST)
+        if register_form.is_valid():
+            email = request.POST.get('email', '')
+            password = request.POST.get('password', '')
+            # 初始化注册用户信息
+            user = UserProfile()
+            user.username = email
+            user.email = email
+            user.password = make_password(password)
+            user.save()
+            # 发送注册邮件
+            send_register_email(email, 'register')
+            return render(request, 'login.html')
+        else:
+            # 表单字段未验证通过
+            return render(request, 'register.html', {'register_form': register_form})
+
