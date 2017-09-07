@@ -6,6 +6,7 @@ from django.db.models import Q
 from django.views.generic.base import View
 
 from .models import UserProfile
+from .forms import LoginForm
 
 
 class CustomBackend(ModelBackend):
@@ -25,11 +26,15 @@ class LoginView(View):
         return render(request, 'login.html')
 
     def post(self, request):
-        username = request.POST.get('username', '')
-        password = request.POST.get('password', '')
-        user = authenticate(username=username, password=password)
-        if user:
-            login(request, user)
-            return render(request, 'index.html')
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            username = request.POST.get('username', '')
+            password = request.POST.get('password', '')
+            user = authenticate(username=username, password=password)
+            if user:
+                login(request, user)
+                return render(request, 'index.html')
+            else:
+                return render(request, 'login.html', {'msg': '用户名或密码错误'})
         else:
-            return render(request, 'login.html', {'msg': '用户名或密码错误'})
+            return render(request, 'login.html', {'form': form})
