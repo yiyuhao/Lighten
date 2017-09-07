@@ -1,3 +1,4 @@
+# coding: utf-8
 """
 Django settings for Lighten project.
 
@@ -30,6 +31,11 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 # Application definition
+
+# 自定义认证：同时使用username及email登陆
+AUTHENTICATION_BACKENDS = (
+    'users.views.CustomBackend',
+)
 
 INSTALLED_APPS = [
     'django.contrib.admin',
