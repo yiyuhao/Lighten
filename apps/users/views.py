@@ -58,6 +58,10 @@ class RegisterView(View):
         register_form = RegisterForm(request.POST)
         if register_form.is_valid():
             email = request.POST.get('email', '')
+            # 邮箱是否已被注册
+            if UserProfile.objects.filter(email=email):
+                return render(request, 'register.html',
+                              {'msg': '该邮箱已被注册', 'register_form': register_form})
             password = request.POST.get('password', '')
             # 初始化注册用户信息
             user = UserProfile()
