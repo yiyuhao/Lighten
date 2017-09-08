@@ -47,3 +47,13 @@ def send_register_email(email_to, send_type='register'):
 
         if send_status:
             pass
+    elif send_type == 'forget':
+        email_title = 'Lighten - 密码重置'
+        email_body = '请点击下面的链接重置你的密码: http://127.0.0.1:8000/reset/{code}'.format(code=random_str)
+        send_status = send_mail(subject=email_title,
+                                message=email_body,
+                                from_email=EMAIL_FROM,
+                                recipient_list=[email_to])
+
+        if send_status:
+            pass

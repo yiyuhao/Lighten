@@ -18,7 +18,7 @@ from django.conf.urls import url, include
 from django.views.generic import TemplateView
 import xadmin
 
-from users.views import LoginView, RegisterView, ActiveUserView
+from users.views import LoginView, RegisterView, ActiveUserView, ForgetPasswordView
 
 urlpatterns = [
     url(r'^xadmin/', xadmin.site.urls),
@@ -29,4 +29,6 @@ urlpatterns = [
     url('^captcha/', include('captcha.urls')),
     # 邮箱激活 'active/<str active_code>'
     url(r'^active/(?P<active_code>.*)/$', ActiveUserView.as_view(), name='user_active'),
+    # 找回密码
+    url(r'^forget/$', ForgetPasswordView.as_view(), name='forget_password'),
 ]

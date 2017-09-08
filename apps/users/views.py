@@ -7,7 +7,7 @@ from django.db.models import Q
 from django.views.generic.base import View
 
 from .models import UserProfile, EmailVerifyRecord
-from .forms import LoginForm, RegisterForm
+from .forms import LoginForm, RegisterForm, ForgetPasswordForm
 from utils.email_send import send_register_email
 
 
@@ -91,3 +91,19 @@ class ActiveUserView(View):
             return render(request, 'login.html')
         else:
             return render(request, 'active_fail.html')
+
+
+class ForgetPasswordView(View):
+    """找回密码界面(输入邮箱获取确认邮件)"""
+
+    def get(self, request):
+        forget_form = ForgetPasswordForm()
+        return render(request, 'forgetpwd.html', {'forget_form': forget_form})
+
+    def post(self, request):
+        forget_form = ForgetPasswordForm(request.POST)
+        if forget_form.is_valid():
+            email = request.POST.get('email')
+            send_register_email(email, 'forget')
+            return render(request, 'send_success.html')
+        return render(request, 'forgetpwd.html', {'forget_form': forget_form})
