@@ -1,6 +1,7 @@
 # coding: utf-8
 
 from random import Random
+from threading import Thread
 
 from django.core.mail import send_mail
 
@@ -11,12 +12,19 @@ from Lighten.settings import EMAIL_FROM
 def generate_random_str(length=8):
     """生成随机字符串  使用Random().randint()"""
     str = ''
-    chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz0123456789'
+    # (用户验证码输入体验)去掉 Ii Ll 11 Oo0
+    chars = 'AaBbCcDdEeFfGgHhJjKkMmNnPpQqRrSsTtUuVvWwXxYyZz23456789'
     chars_len = len(chars)
     random = Random()
     for i in xrange(length):
         str += chars[random.randint(0, chars_len-1)]
     return str
+
+
+def async_send_email(*args, **kwargs):
+    """Multi Thread发送邮件"""
+    th = Thread(target=send_mail, name='send email', args=args, kwargs=kwargs)
+    th.start()
 
 
 def send_register_email(email_to, send_type='register'):
@@ -40,20 +48,16 @@ def send_register_email(email_to, send_type='register'):
     if send_type == 'register':
         email_title = 'Lighten - 注册激活'
         email_body = '请点击下面的链接激活你的账号: http://127.0.0.1:8000/active/{code}'.format(code=random_str)
-        send_status = send_mail(subject=email_title,
-                                message=email_body,
-                                from_email=EMAIL_FROM,
-                                recipient_list=[email_to])
+        async_send_email(subject=email_title,
+                         message=email_body,
+                         from_email=EMAIL_FROM,
+                         recipient_list=[email_to])
 
-        if send_status:
-            pass
     elif send_type == 'forget':
         email_title = 'Lighten - 密码重置'
         email_body = '请点击下面的链接重置你的密码: http://127.0.0.1:8000/reset/{code}'.format(code=random_str)
-        send_status = send_mail(subject=email_title,
-                                message=email_body,
-                                from_email=EMAIL_FROM,
-                                recipient_list=[email_to])
+        async_send_email(subject=email_title,
+                         message=email_body,
+                         from_email=EMAIL_FROM,
+                         recipient_list=[email_to])
 
-        if send_status:
-            pass

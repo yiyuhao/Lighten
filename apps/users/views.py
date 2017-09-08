@@ -7,7 +7,7 @@ from django.db.models import Q
 from django.views.generic.base import View
 
 from .models import UserProfile, EmailVerifyRecord
-from .forms import LoginForm, RegisterForm, ForgetPasswordForm
+from .forms import LoginForm, RegisterForm, ForgetPasswordForm, ModifyPasswordForm
 from utils.email_send import send_register_email
 
 
@@ -107,3 +107,38 @@ class ForgetPasswordView(View):
             send_register_email(email, 'forget')
             return render(request, 'send_success.html')
         return render(request, 'forgetpwd.html', {'forget_form': forget_form})
+
+
+class ResetPasswordView(View):
+    """处理用户重置密码的链接"""
+
+    def get(self, request, reset_code):
+        email_verify_records = EmailVerifyRecord.objects.filter(code=reset_code)
+        if email_verify_records:
+            for record in email_verify_records:
+                email = record.email
+                return render(request, 'password_reset.html', {'email': email})
+        else:
+            return render(request, 'active_fail.html')
+
+
+class ModifyPasswordView(View):
+    """提供表单给用户修改密码"""
+
+    def post(self, request):
+        modify_form = ModifyPasswordForm(request.POST)
+        email = request.POST.get('email', '')
+
+        if modify_form.is_valid():
+            password = request.POST.get('password', '')
+            password_repeat = request.POST.get('password_repeat', '')
+            # 验证两次密码输入一致
+            if password != password_repeat:
+                return render(request, 'password_reset.html', {'email': email, 'msg': '密码不一致'})
+            # 更新用户密码
+            user = UserProfile.objects.get(email=email)
+            user.password = make_password(password)
+            user.save()
+            # 密码修改成功, 返回登录界面
+            return render(request, 'login.html')
+        return render(request, 'password_reset.html', {'email': email, 'modify_form': modify_form})

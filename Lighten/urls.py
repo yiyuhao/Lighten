@@ -18,7 +18,8 @@ from django.conf.urls import url, include
 from django.views.generic import TemplateView
 import xadmin
 
-from users.views import LoginView, RegisterView, ActiveUserView, ForgetPasswordView
+from users.views import LoginView, RegisterView, ActiveUserView, \
+    ForgetPasswordView, ResetPasswordView, ModifyPasswordView
 
 urlpatterns = [
     url(r'^xadmin/', xadmin.site.urls),
@@ -31,4 +32,8 @@ urlpatterns = [
     url(r'^active/(?P<active_code>.*)/$', ActiveUserView.as_view(), name='user_active'),
     # 找回密码
     url(r'^forget/$', ForgetPasswordView.as_view(), name='forget_password'),
+    # 处理重置密码的邮件链接 'reset/<str reset_code>'
+    url(r'^reset/(?P<reset_code>.*)/$', ResetPasswordView.as_view(), name='reset_password'),
+    # 重置密码的请求提交
+    url(r'^modify_password/$', ModifyPasswordView.as_view(), name='modify_password')
 ]

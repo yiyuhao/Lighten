@@ -32,3 +32,11 @@ class ForgetPasswordForm(forms.Form):
     """
     email = forms.EmailField(required=True)
     captcha = CaptchaField(error_messages={'invalid': u'验证码错误'})
+
+
+class ModifyPasswordForm(forms.Form):
+    """
+        修改密码
+    """
+    password = forms.CharField(required=True, min_length=5)
+    password_repeat = forms.CharField(required=True, min_length=5)
