@@ -20,6 +20,7 @@ import xadmin
 
 from users.views import LoginView, RegisterView, ActiveUserView, \
     ForgetPasswordView, ResetPasswordView, ModifyPasswordView
+from organization.views import OrgView
 
 urlpatterns = [
     url(r'^xadmin/', xadmin.site.urls),
@@ -35,5 +36,8 @@ urlpatterns = [
     # 处理重置密码的邮件链接 'reset/<str reset_code>'
     url(r'^reset/(?P<reset_code>.*)/$', ResetPasswordView.as_view(), name='reset_password'),
     # 重置密码的请求提交
-    url(r'^modify_password/$', ModifyPasswordView.as_view(), name='modify_password')
+    url(r'^modify_password/$', ModifyPasswordView.as_view(), name='modify_password'),
+
+    # 课程机构首页
+    url(r'^org_list/$', OrgView.as_view(), name='org_list'),
 ]
