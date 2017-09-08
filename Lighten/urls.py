@@ -1,3 +1,4 @@
+# coding: utf-8
 """Lighten URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
@@ -17,7 +18,7 @@ from django.conf.urls import url, include
 from django.views.generic import TemplateView
 import xadmin
 
-from users.views import LoginView, RegisterView
+from users.views import LoginView, RegisterView, ActiveUserView
 
 urlpatterns = [
     url(r'^xadmin/', xadmin.site.urls),
@@ -26,4 +27,6 @@ urlpatterns = [
     url('^login/$', LoginView.as_view(), name='login'),
     url('^register/$', RegisterView.as_view(), name='register'),
     url('^captcha/', include('captcha.urls')),
+    # 邮箱激活 'active/<str active_code>'
+    url(r'^active/(?P<active_code>.*)/$', ActiveUserView.as_view(), name='user_active'),
 ]

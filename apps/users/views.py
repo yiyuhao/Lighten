@@ -6,7 +6,7 @@ from django.contrib.auth.hashers import make_password
 from django.db.models import Q
 from django.views.generic.base import View
 
-from .models import UserProfile
+from .models import UserProfile, EmailVerifyRecord
 from .forms import LoginForm, RegisterForm
 from utils.email_send import send_register_email
 
@@ -35,13 +35,16 @@ class LoginView(View):
             # 尝试认证用户并返回user
             user = authenticate(username=username, password=password)
             if user:
-                login(request, user)
-                return render(request, 'index.html')
-            else:
-                return render(request, 'login.html', {'msg': '用户名或密码错误'})
+                # 用户已激活 login用户并重定向至主页
+                if user.is_active:
+                    login(request, user)
+                    return render(request, 'index.html')
+                # 用户未激活 返回提示信息
+                return render(request, 'login.html', {'msg': '请前往邮箱激活'})
+            # 用户名密码错误
+            return render(request, 'login.html', {'msg': '用户名或密码错误'})
         # 表单字段未验证通过
-        else:
-            return render(request, 'login.html', {'login_form': login_form})
+        return render(request, 'login.html', {'login_form': login_form})
 
 
 class RegisterView(View):
@@ -61,6 +64,7 @@ class RegisterView(View):
             user.username = email
             user.email = email
             user.password = make_password(password)
+            user.is_active = False
             user.save()
             # 发送注册邮件
             send_register_email(email, 'register')
@@ -69,3 +73,15 @@ class RegisterView(View):
             # 表单字段未验证通过
             return render(request, 'register.html', {'register_form': register_form})
 
+
+class ActiveUserView(View):
+    """用户邮箱激活"""
+
+    def get(self, request, active_code):
+        email_verify_records = EmailVerifyRecord.objects.filter(code=active_code)
+        if email_verify_records:
+            for record in email_verify_records:
+                user = UserProfile.objects.get(email=record.email)
+                user.is_active = True
+                user.save()
+        return render(request, 'login.html')
