@@ -51,7 +51,19 @@ INSTALLED_APPS = [
     'xadmin',
     'crispy_forms',
     'captcha',
+    'pure_pagination',
 ]
+
+# django-pure-pagination配置
+PAGINATION_SETTINGS = {
+    # 分页插件配置
+    'PAGE_RANGE_DISPLAYED': 10,
+    'MARGIN_PAGES_DISPLAYED': 2,
+    # 每页显示数
+    'ORGANIZATION_NUM_PER_PAGE': 5,
+
+    'SHOW_FIRST_PAGE_WHEN_INVALID': True,
+}
 
 #
 AUTH_USER_MODEL = 'users.UserProfile'

@@ -60,7 +60,7 @@
                             </ul>
                         </div>
                         {# 机构列表 #}
-                        {% for org in all_organizations %}
+                        {% for org in org_paginator.object_list %}
                             <dl class="des difdes">
                             <dt>
                                 <a href="org-detail-homepage.html">
@@ -97,26 +97,49 @@
                             <div class="buy start_groupbuy jsShowPerfect2" data-id="22"><br/>联系<br/>服务</div>
                         </dl>
                         {% endfor %}
-
                     </div>
+
+                    {# 分页 #}
+                    {% load i18n %}
                     <div class="pageturn">
                         <ul class="pagelist">
 
+                            {# 上一页 #}
+                            {% if org_paginator.has_previous %}
+                                <li class="long">
+                                    {# *.querystring 如: 'page=1' #}
+                                    <a href="?{{ org_paginator.previous_page_number.querystring }}">
+                                        上一页
+                                    </a>
+                                </li>
+                            {% endif %}
 
-                            <li class="active"><a href="?page=1">1</a></li>
+                            {# 分页主体 #}
+                            {% for page in org_paginator.pages %}
+                                {# p.pages返回如: 1, 2, None, 5, 6, None, 9 #}
+                                {% if page %}
+                                    {# 当前页面高亮显示 #}
+                                    <li{% if page == org_paginator.number %} class="active"{% endif %}>
+                                        <a href="?{{ page.querystring }}">
+                                            {{ page }}
+                                        </a>
+                                    </li>
+                                {% else %}
+                                    <li>...</li>
+                                {% endif %}
+                            {% endfor %}
 
-
-                            <li><a href="?page=2" class="page">2</a></li>
-
-
-                            <li><a href="?page=3" class="page">3</a></li>
-
-
-                            <li class="long"><a href="?page=2">下一页</a></li>
-
-
+                            {# 下一页 #}
+                            {% if org_paginator.has_next %}
+                                <li class="long">
+                                    <a href="?{{ org_paginator.next_page_number.querystring }}">
+                                        下一页
+                                    </a>
+                                </li>
+                            {% endif %}
                         </ul>
                     </div>
+
                 </div>
             </div>
             <div class="right companyright">
