@@ -13,9 +13,17 @@ class OrgView(View):
     """
 
     def get(self, request):
-        # 课程机构
-        all_organizations = CourseOrg.objects.all()
+        # 取出筛选城市
+        city_id = request.GET.get('city', '')
+
+        # 获取所有课程机构
+        if city_id:
+            all_organizations = CourseOrg.objects.filter(city_id=int(city_id))
+        else:
+            all_organizations = CourseOrg.objects.all()
+        # 所有机构的数量
         org_nums = all_organizations.count()
+
         # 城市
         all_cities = CityDict.objects.all()
         # 授课教师
@@ -34,4 +42,5 @@ class OrgView(View):
         return render(request, 'org-list.html',
                       {'org_paginator': org_paginator,
                        'all_cities': all_cities,
-                       'org_nums': org_nums})
+                       'org_nums': org_nums,
+                       'cur_city_id': city_id})
