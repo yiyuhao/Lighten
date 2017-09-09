@@ -13,9 +13,10 @@ class OrgView(View):
     """
 
     def get(self, request):
-        # 取出城市及类别参数
+        # 取出城市、类别、排序参数
         city_id = request.GET.get('city', '')
         category = request.GET.get('ct', '')
+        sort = request.GET.get('sort', '')
 
         # 机构排名
         hot_orgs = CourseOrg.objects.order_by('-click_nums')[:3]
@@ -34,6 +35,12 @@ class OrgView(View):
         if category:
             all_organizations = all_organizations.filter(category=category)
 
+        # 根据sort: 'students' or 'courses'进行排序
+        if sort:
+            sort_dict = {'students': '-student_nums',
+                         'courses': '-course_nums'}
+            all_organizations = all_organizations.order_by(sort_dict[sort])
+
         # 对课程机构进行分页
         per_page = PAGINATION_SETTINGS.get('ORGANIZATION_NUM_PER_PAGE', '5')
         paginator = Paginator(all_organizations, per_page=per_page, request=request)
@@ -50,4 +57,5 @@ class OrgView(View):
                        'org_nums': all_organizations.count(),
                        'cur_city_id': city_id,
                        'category': category,
-                       'hot_orgs': hot_orgs})
+                       'hot_orgs': hot_orgs,
+                       'sort': sort})
