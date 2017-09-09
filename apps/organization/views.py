@@ -17,6 +17,8 @@ class OrgView(View):
         city_id = request.GET.get('city', '')
         category = request.GET.get('ct', '')
 
+        # 机构排名
+        hot_orgs = CourseOrg.objects.order_by('-click_nums')[:3]
         # 城市
         all_cities = CityDict.objects.all()
         # 授课教师
@@ -47,4 +49,5 @@ class OrgView(View):
                        'all_cities': all_cities,
                        'org_nums': all_organizations.count(),
                        'cur_city_id': city_id,
-                       'category': category})
+                       'category': category,
+                       'hot_orgs': hot_orgs})
