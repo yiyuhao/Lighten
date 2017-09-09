@@ -26,20 +26,20 @@
                         <li>
                             <h2>机构类别</h2>
                             <div class="cont">
-                                <a href="?city="><span class="active2">全部</span></a>
-                                <a href="?ct=pxjg&city="><span class="">培训机构</span></a>
-                                <a href="?ct=gx&city="><span class="">高校</span></a>
-                                <a href="?ct=gr&city="><span class="">个人</span></a>
+                                <a href="?city={{ cur_city_id }}"><span{% if category == '' %} class="active2"{% endif %}>全部</span></a>
+                                <a href="?ct=pxjg&city={{ cur_city_id }}"><span{% if category == 'pxjg' %} class="active2"{% endif %}>培训机构</span></a>
+                                <a href="?ct=gx&city={{ cur_city_id }}"><span{% if category == 'gx' %} class="active2"{% endif %}>高校</span></a>
+                                <a href="?ct=gr&city={{ cur_city_id }}"><span{% if category == 'gr' %} class="active2"{% endif %}>个人</span></a>
                             </div>
                         </li>
                         <li>
                             <h2>所在地区</h2>
                             <div class="more">更多</div>
                             <div class="cont">
-                                <a href="?ct="><span{% if cur_city_id == '' %} class="active2"{% endif %}>全部</span></a>
+                                <a href="?ct={{ category }}"><span{% if cur_city_id == '' %} class="active2"{% endif %}>全部</span></a>
                                 {# 城市列表 #}
                                 {% for city in all_cities %}
-                                    <a href="?city={{ city.id }}">
+                                    <a href="?city={{ city.id }}&ct={{ category }}">
                                         <span{% if cur_city_id == city.id|stringformat:'i' %} class="active2"{% endif %}>
                                             {{ city }}
                                         </span>
