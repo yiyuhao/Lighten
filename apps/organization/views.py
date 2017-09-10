@@ -1,9 +1,11 @@
 # coding: utf-8
+from django.http import HttpResponse
 from django.shortcuts import render
 from django.views.generic import View
 from pure_pagination import Paginator, EmptyPage, PageNotAnInteger
 
 from .models import CityDict, CourseOrg, Teacher
+from .forms import UserAskForm
 from Lighten.settings import PAGINATION_SETTINGS
 
 
@@ -59,3 +61,15 @@ class OrgView(View):
                        'category': category,
                        'hot_orgs': hot_orgs,
                        'sort': sort})
+
+
+class AddUserAskView(View):
+    """处理用户'我要学习'表单"""
+
+    def post(self, request):
+        user_ask_form = UserAskForm(request.POST)
+        if user_ask_form.is_valid():
+            user_ask_form.save(commit=True)
+            return HttpResponse('{"status": "success"}', content_type='application/json')
+        else:
+            return HttpResponse('{"status": "fail", "msg": "添加出错"}', content_type='application/json')
