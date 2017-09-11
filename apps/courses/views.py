@@ -12,7 +12,10 @@ class CourseListView(View):
     """课程列表"""
 
     def get(self, request):
+        # 最新公开课
         all_courses = Course.objects.order_by('-add_time').all()
+        # 热门课程推荐
+        hot_courses = Course.objects.order_by('-click_nums').all()[:3]
 
         sort = request.GET.get('sort', '')
 
@@ -33,6 +36,6 @@ class CourseListView(View):
         course_paginator = paginator.page(per_page)
 
         return render(request, 'course-list.html', {'current_page': 'course_list',
-                                                    'all_courses': all_courses,
+                                                    'hot_courses': hot_courses,
                                                     'course_paginator': course_paginator,
                                                     'sort': sort})
