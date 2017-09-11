@@ -87,7 +87,7 @@ class OrgDetailHomepageView(View):
                                                                                           fav_id=course_org.id,
                                                                                           fav_type=2) else False
 
-        all_courses = course_org.course_set.all()[:3]
+        all_courses = course_org.course_set.order_by('-students').all()[:3]
         all_teachers = course_org.teacher_set.all()[:1]
         return render(request, 'org-detail-homepage.html', {'course_org': course_org,
                                                             'all_courses': all_courses,
