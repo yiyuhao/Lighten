@@ -6,6 +6,7 @@ from pure_pagination import Paginator, EmptyPage, PageNotAnInteger
 
 from .models import CityDict, CourseOrg, Teacher
 from .forms import UserAskForm
+from courses.models import Course
 from Lighten.settings import PAGINATION_SETTINGS
 
 
@@ -65,7 +66,6 @@ class OrgView(View):
 
 class AddUserAskView(View):
     """处理用户'我要学习'表单"""
-
     def post(self, request):
         user_ask_form = UserAskForm(request.POST)
         if user_ask_form.is_valid():
@@ -73,3 +73,44 @@ class AddUserAskView(View):
             return HttpResponse('{"status": "success"}', content_type='application/json')
         else:
             return HttpResponse('{"status": "fail", "msg": "添加出错"}', content_type='application/json')
+
+
+class OrgDetailHomepageView(View):
+    """首页->课程机构->机构首页"""
+    def get(self, request, org_id):
+        course_org = CourseOrg.objects.get(id=int(org_id))
+        all_courses = course_org.course_set.all()[:3]
+        all_teachers = course_org.teacher_set.all()[:1]
+        return render(request, 'org-detail-homepage.html', {'course_org': course_org,
+                                                            'all_courses': all_courses,
+                                                            'all_teachers': all_teachers,
+                                                            # 用于org_detail_base.html中确定标签的active
+                                                            'current_page': 'homepage'})
+
+
+class OrgDetailCourseView(View):
+    """首页->课程机构->机构课程"""
+    def get(self, request, org_id):
+        course_org = CourseOrg.objects.get(id=int(org_id))
+        all_courses = course_org.course_set.all()
+        return render(request, 'org-detail-course.html', {'course_org': course_org,
+                                                          'all_courses': all_courses,
+                                                          'current_page': 'courses'})
+
+
+class OrgDetailDescView(View):
+    """首页->课程机构->机构介绍"""
+    def get(self, request, org_id):
+        course_org = CourseOrg.objects.get(id=int(org_id))
+        return render(request, 'org-detail-desc.html', {'course_org': course_org,
+                                                        'current_page': 'desc'})
+
+
+class OrgDetailTeacherView(View):
+    """首页->课程机构->机构讲师"""
+    def get(self, request, org_id):
+        course_org = CourseOrg.objects.get(id=int(org_id))
+        all_teachers = course_org.teacher_set.all()
+        return render(request, 'org-detail-teachers.html', {'course_org': course_org,
+                                                            'all_teachers': all_teachers,
+                                                            'current_page': 'teachers'})
