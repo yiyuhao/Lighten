@@ -19,7 +19,7 @@ from django.views.generic import TemplateView
 from django.views.static import serve
 import xadmin
 
-from users.views import LoginView, RegisterView, ActiveUserView, \
+from users.views import LoginView, LogoutView, RegisterView, ActiveUserView, \
     ForgetPasswordView, ResetPasswordView, ModifyPasswordView
 from organization.views import OrgView
 from Lighten.settings import MEDIA_ROOT
@@ -29,6 +29,7 @@ urlpatterns = [
 
     url('^$', TemplateView.as_view(template_name='index.html'), name='index'),
     url('^login/$', LoginView.as_view(), name='login'),
+    url('^logout', LogoutView.as_view(), name='logout'),
     url('^register/$', RegisterView.as_view(), name='register'),
     url('^captcha/', include('captcha.urls')),
     # 邮箱激活 'active/<str active_code>'

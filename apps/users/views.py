@@ -1,6 +1,6 @@
 # coding: utf-8
 from django.shortcuts import render
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth.hashers import make_password
 from django.db.models import Q
@@ -45,6 +45,14 @@ class LoginView(View):
             return render(request, 'login.html', {'msg': '用户名或密码错误'})
         # 表单字段未验证通过
         return render(request, 'login.html', {'login_form': login_form})
+
+
+class LogoutView(View):
+    """退出登录"""
+
+    def get(self, request):
+            logout(request)
+            return render(request, 'index.html')
 
 
 class RegisterView(View):
