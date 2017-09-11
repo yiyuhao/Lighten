@@ -16,6 +16,7 @@ import sys
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# app目录注册入python搜索路径
 sys.path.append(os.path.join(BASE_DIR, 'apps'))
 sys.path.append(os.path.join(BASE_DIR, 'extra_apps'))
 
@@ -44,13 +45,17 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # app注册
     'users',
     'courses',
     'organization',
     'operation',
+    # 三方库 xadmin
     'xadmin',
     'crispy_forms',
+    # 验证码
     'captcha',
+    # 三方库: django-pure-pagination
     'pure_pagination',
 ]
 
