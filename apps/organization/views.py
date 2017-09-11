@@ -26,8 +26,6 @@ class OrgView(View):
         hot_orgs = CourseOrg.objects.order_by('-click_nums')[:3]
         # 城市
         all_cities = CityDict.objects.all()
-        # 授课教师
-        all_teachers = Teacher.objects.all()
 
         # 根据城市筛选课程机构
         if city_id:
@@ -62,7 +60,8 @@ class OrgView(View):
                        'cur_city_id': city_id,
                        'category': category,
                        'hot_orgs': hot_orgs,
-                       'sort': sort})
+                       'sort': sort,
+                       'current_page': 'org_list'})
 
 
 class AddUserAskView(View):
