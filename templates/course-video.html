@@ -49,6 +49,7 @@
                 </div>
             </div>
         </div>
+
         <div class="course-info-main clearfix w has-progress">
 
             <div class="info-bar clearfix">
@@ -57,8 +58,9 @@
                         <div class="mod-tab-menu">
                             <ul class="course-menu clearfix">
                                 <li><a class="ui-tabs-active active" id="learnOn"
-                                       href="course-video.html"><span>章节</span></a></li>
-                                <li><a id="commentOn" class="" href="course-comment.html"><span>评论</span></a></li>
+                                       href="{% url 'course:info' course.id %}"><span>章节</span></a></li>
+                                <li><a id="commentOn" class=""
+                                       href="{% url 'course:comment' course.id %}"><span>评论</span></a></li>
                             </ul>
                         </div>
                         {% if course.notice %}
@@ -69,31 +71,37 @@
                             </div>
                         {% endif %}
 
-                        {# 课程章节 #}
-                        <div class="mod-chapters">
-                            {# course-lesson #}
-                            {% for lesson in course.lesson %}
-                                <div class="chapter chapter-active">
-                                    <h3>
-                                        <strong><i class="state-expand"></i>{{ lesson.name }}</strong>
-                                    </h3>
-                                    <ul class="video">
-                                        {# course-lesson-video #}
-                                        {% for video in lesson.video %}
-                                            <li>
-                                                <a target="_blank" href='/video/3662' class="J-media-item studyvideo">
-                                                    {{ video.name }}
-                                                    ({{ video.learn_times }}分钟)
-                                                    <i class="study-state"></i>
-                                                </a>
-                                            </li>
-                                        {% endfor %}
-                                    </ul>
-                                </div>
-                            {% endfor %}
-                        </div>
+                        {# 章节或者评论，用于被course-comment.html继承重写 #}
+                        {% block lesson_or_comment %}
+                            {# 课程章节 #}
+                            <div class="mod-chapters">
+                                {# course-lesson #}
+                                {% for lesson in course.lesson %}
+                                    <div class="chapter chapter-active">
+                                        <h3>
+                                            <strong><i class="state-expand"></i>{{ lesson.name }}</strong>
+                                        </h3>
+                                        <ul class="video">
+                                            {# course-lesson-video #}
+                                            {% for video in lesson.video %}
+                                                <li>
+                                                    <a target="_blank" href='/video/3662'
+                                                       class="J-media-item studyvideo">
+                                                        {{ video.name }}
+                                                        ({{ video.learn_times }}分钟)
+                                                        <i class="study-state"></i>
+                                                    </a>
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endblock %}
 
                     </div>
+
+                    {# 侧边 资料下载、讲师提示等 #}
                     <div class="aside r">
                         <div class="bd">
 
@@ -136,7 +144,6 @@
                                 </div>
                             </div>
 
-
                             <div class="cp-other-learned  js-comp-tabs">
                                 <div class="cp-header clearfix">
                                     <h2 class="cp-tit l">该课的同学还学过</h2>
@@ -159,27 +166,6 @@
                                                 <a href="course-detail.html" target="_blank">
                                                     <img src="{% static 'media/courses/2016/12/python面向对象.jpg" alt="python面向对象">
                                                 <span class=" name autowrap">python面向对象</span>
-                                                </a>
-                                            </li>
-
-                                            <li class="curr">
-                                                <a href="course-detail.html" target="_blank">
-                                                    <img src="{% static 'media/courses/2016/12/python文件处理.jpg" alt="python文件处理">
-                                                <span class=" name autowrap">python文件处理</span>
-                                                </a>
-                                            </li>
-
-                                            <li class="curr">
-                                                <a href="course-detail.html" target="_blank">
-                                                    <img src="{% static 'media/courses/2016/11/mysql.jpg" alt="django入门">
-                                                <span class=" name autowrap">django入门</span>
-                                                </a>
-                                            </li>
-
-                                            <li class="curr">
-                                                <a href="course-detail.html" target="_blank">
-                                                    <img src="{% static 'media/courses/2016/12/mysql.jpg" alt="xadmin进阶开发">
-                                                <span class=" name autowrap">xadmin进阶开发</span>
                                                 </a>
                                             </li>
 

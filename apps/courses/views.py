@@ -1,11 +1,12 @@
 # coding: utf-8
 
+from django.http import HttpResponse
 from django.shortcuts import render
 from django.views.generic import View
 from pure_pagination import Paginator, PageNotAnInteger
 
 from .models import Course, CourseResource
-from operation.models import UserFavorite
+from operation.models import UserFavorite, CourseComments
 from Lighten.settings import PAGINATION_SETTINGS
 
 
@@ -81,3 +82,43 @@ class CourseInfoView(View):
         course_resources = CourseResource.objects.filter(course=course)
         return render(request, 'course-video.html', {'course': course,
                                                      'course_resources': course_resources})
+
+
+class CourseCommentView(View):
+    """课程评论页"""
+
+    def get(self, request, course_id):
+        course = Course.objects.get(id=int(course_id))
+        course_resources = CourseResource.objects.filter(course=course)
+        course_comments = CourseComments.objects.filter(course=course)
+
+        return render(request, 'course-comment.html', {'course': course,
+                                                       'course_resources': course_resources,
+                                                       'course_comments': course_comments})
+
+
+class AddCommentView(View):
+    """添加评论"""
+
+    def post(self, request):
+
+        # 用户必须为登录状态
+        if not request.user.is_authenticated():
+            return HttpResponse('{"status": "fail", "msg": "用户未登录"}',
+                                content_type='application/json')
+
+        course_id = request.POST.get('course_id', 0)
+        comment = request.POST.get('comment', '')
+        if course_id > 0 and comment:
+            course = Course.objects.get(id=course_id)
+
+            course_comment = CourseComments()
+            course_comment.course = course
+            course_comment.comments = comment
+            course_comment.user = request.user
+            course_comment.save()
+            return HttpResponse('{"status": "success", "msg": "添加成功"}',
+                                content_type='application/json')
+        else:
+            return HttpResponse('{"status": "fail", "msg": "添加失败"}',
+                                content_type='application/json')
