@@ -91,7 +91,6 @@
                                     </ul>
                                 </div>
                             {% endfor %}
-
                         </div>
 
                     </div>
@@ -103,7 +102,8 @@
                                 <ul class="downlist">
                                     {% for resource in course_resources %}
                                         <li>
-                                            <span><i class="aui-iconfont aui-icon-file"></i>&nbsp;&nbsp;{{ resource.name }}</span>
+                                            <span><i
+                                                    class="aui-iconfont aui-icon-file"></i>&nbsp;&nbsp;{{ resource.name }}</span>
                                             <a href="{{ MEDIA_URL }}{{ resource.download }}"
                                                target="_blank" download="" data-id="274" title="">下载</a>
                                         </li>
@@ -114,22 +114,24 @@
                             <div class="box mb40">
                                 <h4>讲师提示</h4>
                                 <div class="teacher-info">
+                                    {# todo teacher #}
                                     <a href="/u/315464/courses?sort=publish" target="_blank">
-                                        <img src='../media/teacher/2016/11/aobama_CXWwMef.png' width='80' height='80'/>
+                                        <img src='{{ MEDIA_URL }}{{ course.teacher.image }}' width='80' height='80'/>
                                     </a>
                                     <span class="tit">
-          <a href="/u/315464/courses?sort=publish" target="_blank">bobby</a>
-        </span>
-                                    <span class="job">xxx</span>
+                                        <a href="/u/315464/courses?sort=publish"
+                                           target="_blank">{{ course.teacher.name }}</a>
+                                    </span>
+                                    <span class="job">{{ course.teacher.work_position }}</span>
                                 </div>
                                 <div class="course-info-tip">
                                     <dl class="first">
                                         <dt>课程须知</dt>
-                                        <dd class="autowrap">python基础你需要有</dd>
+                                        <dd class="autowrap">{{ course.you_need_know }}</dd>
                                     </dl>
                                     <dl>
                                         <dt>老师告诉你能学到什么？</dt>
-                                        <dd class="autowrap">django的进阶开发</dd>
+                                        <dd class="autowrap">{{ course.teacher_tell }}</dd>
                                     </dl>
                                 </div>
                             </div>
