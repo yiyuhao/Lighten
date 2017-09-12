@@ -33,20 +33,26 @@
                                 <span class="fr">学习人数：{{ course.students }}</span>
                             </div>
                             <ul class="parameter">
-                                <li><span class="pram word3">时&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;长：</span><span>{{ course.learn_times }}</span></li>
-                                <li><span class="pram word3">章&nbsp;节&nbsp;数：</span><span>{{ course.lesson_nums }}</span></li>
-                                <li><span class="pram word3">课程类别：</span><span title="">{{ course.category }}</span></li>
+                                <li><span
+                                        class="pram word3">时&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;长：</span><span>{{ course.learn_times }}</span>
+                                </li>
+                                <li><span
+                                        class="pram word3">章&nbsp;节&nbsp;数：</span><span>{{ course.lesson_nums }}</span>
+                                </li>
+                                <li><span class="pram word3">课程类别：</span><span title="">{{ course.category }}</span>
+                                </li>
                                 <li class="piclist"><span class="pram word4">学习用户：</span>
                                     {% for user_course in course.learning_user_courses %}
                                         <span class="pic"><img width="40" height="40"
-                                                               src="{{ MEDIA_URL }}{{ user_course.user.image }}"/></span>
+                                                               src="
+                                                                       {{ MEDIA_URL }}{{ user_course.user.image }}"/></span>
                                     {% endfor %}
 
                                 </li>
                             </ul>
                             <div class="btns">
                                 <div class="btn colectgroupbtn" id="jsLeftBtn">
-                                    收藏
+                                    {% if course_has_fav %}已{% endif %}收藏
                                 </div>
                                 <div class="buy btn"><a style="color: white" href="course-video.html">开始学习</a></div>
                             </div>
@@ -80,17 +86,17 @@
                         <a href="/company/14/">
                             <h2 class="center" title="{{ course.course_org.name }}">{{ course.course_org.name }}</h2>
                         </a>
-                        <div class="btn  notlogin
+                        <div class="btn notlogin
 					     " data-favid="14" id="jsRightBtn">
-                            已收藏
+                            {% if org_has_fav %}已{% endif %}收藏
                         </div>
                         <div class="clear">
                             <ul>
                                 <li>
-                                    <span>课 &nbsp;程&nbsp; 数：&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   {{ course.course_org.course_nums }}</span>
+                                    <span>课 &nbsp;程&nbsp; 数：&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {{ course.course_org.course_nums }}</span>
                                 </li>
                                 <li>
-                                    <span>教 &nbsp;师&nbsp; 数：&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  {{ course.course_org.teacher_nums }}</span>
+                                    <span>教 &nbsp;师&nbsp; 数：&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {{ course.course_org.teacher_nums }}</span>
                                 </li>
                                 <li>所在地区：&nbsp;&nbsp;{{ course.course_org.city }}</li>
                                 <li>认&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;证&nbsp;:
@@ -128,21 +134,20 @@
                 <div class="right layout">
                     <div class="head">相关课程推荐</div>
                     <div class="group_recommend">
-
-                        <dl>
-                            <dt>
-                                <a target="_blank" href="">
-                                    <img width="240" height="220" class="scrollLoading"
-                                         src="{% static 'media/courses/2016/11/540e57300001d6d906000338-240-135_mvvGYHL.jpg' %}"/>
-                                </a>
-                            </dt>
-                            <dd>
-                                <a target="_blank" href=""><h2> django实战项目</h2></a>
-                                <span class="fl">学习时长：<i class="key">0</i></span>
-                            </dd>
-                        </dl>
-
-
+                        {% for course in relate_courses %}
+                            <dl>
+                                <dt>
+                                    <a href="{% url 'course:detail' course.id %}">
+                                        <img width="240" height="220" class="scrollLoading"
+                                             src="{{ MEDIA_URL }}{{ course.image }}"/>
+                                    </a>
+                                </dt>
+                                <dd>
+                                    <a href="{% url 'course:detail' course.id %}"><h2> {{ course.name }}</h2></a>
+                                    <span class="fl">学习时长：<i class="key">{{ course.learn_times }}</i></span>
+                                </dd>
+                            </dl>
+                        {% endfor %}
                     </div>
                 </div>
             </div>
@@ -161,29 +166,31 @@
                 data: {'fav_id': fav_id, 'fav_type': fav_type},
                 async: true,
                 beforeSend: function (xhr, settings) {
-                    xhr.setRequestHeader("X-CSRFToken", "5I2SlleZJOMUX9QbwYLUIAOshdrdpRcy");
+                    xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
                 },
                 success: function (data) {
                     if (data.status == 'fail') {
                         if (data.msg == '用户未登录') {
                             window.location.href = "login.html";
                         } else {
-                            alert(data.msg)
+                            current_elem.text(data.msg)
                         }
 
                     } else if (data.status == 'success') {
                         current_elem.text(data.msg)
                     }
-                },
+                }
             });
         }
 
         $('#jsLeftBtn').on('click', function () {
-            add_fav($(this), 10, 1);
+            {# fav_type: 1为课程收藏，2为机构收藏 #}
+            add_fav($(this), {{ course.id }}, 1);
         });
 
         $('#jsRightBtn').on('click', function () {
-            add_fav($(this), 2, 2);
+            {# fav_type: 1为课程收藏，2为机构收藏 #}
+            add_fav($(this), {{ course.course_org.id }}, 2);
         });
     </script>
 {% endblock %}
