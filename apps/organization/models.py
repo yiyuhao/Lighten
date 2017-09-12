@@ -42,6 +42,11 @@ class CourseOrg(models.Model):
     def __unicode__(self):
         return self.name
 
+    @property
+    def teacher_nums(self):
+        """获取机构讲师数"""
+        return self.teacher_set.all().count()
+
 
 class Teacher(models.Model):
     name = models.CharField(max_length=50, verbose_name=u'教师名')
