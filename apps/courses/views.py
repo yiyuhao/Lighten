@@ -71,3 +71,11 @@ class CourseDetailView(View):
                                                       'relate_courses': relate_courses,
                                                       'course_has_fav': course_has_fav,
                                                       'org_has_fav': org_has_fav})
+
+
+class CourseInfoView(View):
+    """课程视频页(用户点击开始学习后)"""
+
+    def get(self, request, course_id):
+        course = Course.objects.get(id=int(course_id))
+        return render(request, 'course-video.html', {'course': course})
