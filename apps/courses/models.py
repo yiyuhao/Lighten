@@ -12,6 +12,7 @@ class Course(models.Model):
     course_org = models.ForeignKey(CourseOrg, verbose_name=u'课程机构', null=True, blank=True)
     desc = models.CharField(max_length=300, verbose_name=u'课程描述')
     detail = models.TextField(verbose_name=u'课程详情')
+    notice = models.CharField(max_length=300, verbose_name=u'课程公告', default='')
     degree = models.CharField(choices=(('cj', u'初级'), ('zj', u'中级'), ('gj', u'高级')),
                               max_length=2, verbose_name=u'难度')
     learn_times = models.IntegerField(default=0, verbose_name=u'学习时长(分钟数)')
@@ -40,6 +41,11 @@ class Course(models.Model):
         """获取该课程下的 用户-课程"""
         return self.usercourse_set.all()
 
+    @property
+    def lesson(self):
+        """获取课程所有章节"""
+        return self.lesson_set.all()
+
 
 class Lesson(models.Model):
     name = models.CharField(max_length=100, verbose_name=u'章节名')
@@ -53,10 +59,16 @@ class Lesson(models.Model):
     def __unicode__(self):
         return self.name
 
+    @property
+    def video(self):
+        """获取章节所有视频"""
+        return self.video_set.all()
+
 
 class Video(models.Model):
     name = models.CharField(max_length=100, verbose_name=u'视频名')
     lesson = models.ForeignKey(Lesson, verbose_name=u'章节')
+    learn_times = models.IntegerField(default=0, verbose_name=u'学习时长(分钟数)')
     url = models.CharField(max_length=1000, verbose_name=u'访问地址', default='')
     add_time = models.DateTimeField(default=datetime.now, verbose_name=u'添加时间')
 
