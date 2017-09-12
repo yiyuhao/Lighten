@@ -4,7 +4,7 @@ from django.shortcuts import render
 from django.views.generic import View
 from pure_pagination import Paginator, PageNotAnInteger
 
-from .models import Course
+from .models import Course, CourseResource
 from operation.models import UserFavorite
 from Lighten.settings import PAGINATION_SETTINGS
 
@@ -78,4 +78,6 @@ class CourseInfoView(View):
 
     def get(self, request, course_id):
         course = Course.objects.get(id=int(course_id))
-        return render(request, 'course-video.html', {'course': course})
+        course_resources = CourseResource.objects.filter(course=course)
+        return render(request, 'course-video.html', {'course': course,
+                                                     'course_resources': course_resources})
