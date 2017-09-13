@@ -8,6 +8,7 @@ from pure_pagination import Paginator, PageNotAnInteger
 from .models import Course, CourseResource
 from operation.models import UserFavorite, CourseComments, UserCourse
 from utils.function import order_by_occur_nums
+from utils.mixin_utils import LoginRequiredMixin
 from Lighten.settings import PAGINATION_SETTINGS
 
 
@@ -75,7 +76,7 @@ class CourseDetailView(View):
                                                       'org_has_fav': org_has_fav})
 
 
-class CourseInfoView(View):
+class CourseInfoView(LoginRequiredMixin, View):
     """课程视频页(用户点击开始学习后)"""
 
     def get(self, request, course_id):
@@ -104,7 +105,7 @@ class CourseInfoView(View):
                                                      'relate_courses': relate_courses})
 
 
-class CourseCommentView(View):
+class CourseCommentView(LoginRequiredMixin, View):
     """课程评论页"""
 
     def get(self, request, course_id):
