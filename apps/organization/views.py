@@ -206,3 +206,33 @@ class TeacherListView(View):
                                                       'teacher_nums': all_teachers.count(),
                                                       'hot_teachers': hot_teachers,
                                                       'sort': sort})
+
+
+class TeacherDetailView(View):
+    """
+        讲师详情页
+    """
+
+    def get(self, request, teacher_id):
+        teacher = Teacher.objects.get(id=teacher_id)
+        teacher_has_fav = True if request.user.is_authenticated() and UserFavorite.objects.filter(user=request.user,
+                                                                                                  fav_id=teacher_id,
+                                                                                                  # 3为教师类型
+                                                                                                  fav_type=3) else False
+        org_has_fav = True if request.user.is_authenticated() and UserFavorite.objects.filter(user=request.user,
+                                                                                              fav_id=teacher.org.id,
+                                                                                              # 2为课程机构
+                                                                                              fav_type=2) else False
+        # 讲师排行榜
+        hot_teachers = Teacher.objects.order_by('-fav_nums')[:5]
+
+        # 全部课程(按照学习人数排序)
+        teacher_courses = Course.objects.filter(teacher=teacher).order_by('-students')
+
+        return render(request, 'teacher-detail.html', {'teacher': teacher,
+                                                       'teacher_has_fav': teacher_has_fav,
+                                                       'org_has_fav': org_has_fav,
+                                                       'teacher_courses': teacher_courses,
+                                                       'typical_courses': teacher_courses[:2],
+                                                       'current_page': 'teacher_list',
+                                                       'hot_teachers': hot_teachers})
