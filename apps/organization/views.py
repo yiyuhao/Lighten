@@ -173,3 +173,36 @@ class AddFavView(View):
             else:
                 return HttpResponse('{"status": "fail", "msg": "收藏失败"}',
                                     content_type='application/json')
+
+
+class TeacherListView(View):
+    """
+        课程讲师列表页
+    """
+
+    def get(self, request):
+
+        # 是否排序
+        sort = request.GET.get('sort', '')
+        if sort == 'hot':
+            all_teachers = Teacher.objects.order_by('-click_nums')
+        else:
+            all_teachers = Teacher.objects.all()
+
+        # 分页
+        per_page = PAGINATION_SETTINGS.get('TEACHER_NUM_PER_PAGE', 10)
+        paginator = Paginator(all_teachers.all(), per_page, request=request)
+        try:
+            page_index = int(request.GET.get('page', 1))
+        except PageNotAnInteger:
+            page_index = 1
+        teacher_paginator = paginator.page(page_index)
+
+        # 讲师排行榜
+        hot_teachers = Teacher.objects.order_by('-fav_nums')[:5]
+
+        return render(request, 'teachers-list.html', {'current_page': 'teacher_list',
+                                                      'teacher_paginator': teacher_paginator,
+                                                      'teacher_nums': all_teachers.count(),
+                                                      'hot_teachers': hot_teachers,
+                                                      'sort': sort})

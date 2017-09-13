@@ -41,7 +41,7 @@ urlpatterns = [
     # 重置密码的请求提交
     url(r'^modify_password/$', ModifyPasswordView.as_view(), name='modify_password'),
 
-    # 课程机构url配置
+    # 课程机构相关url配置
     url(r'^org/', include('organization.urls', namespace='org')),
 
     # 课程相关url配置
