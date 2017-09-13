@@ -23,32 +23,35 @@
 
 {% block content %}
     <div id="main">
-        <div class="course-infos">
-            <div class="w pr">
-                <div style="height: 15px" class="path">
-                </div>
-                <div class="hd">
-                    <h2 class="l">{{ course.name }}</h2>
-                </div>
-                <div class="statics clearfix">
-                    <div class="static-item ">
-                        <span class="meta-value"><strong>{{ course.get_degree_display }}</strong></span>
-                        <span class="meta">难度</span>
-                        <em></em>
+        {# 课程介绍或视频 #}
+        {% block course_info_or_video %}
+            <div class="course-infos">
+                <div class="w pr">
+                    <div style="height: 15px" class="path">
                     </div>
-                    <div class="static-item static-time">
-                        <span class="meta-value">{{ course.learn_times }}分钟</span>
-                        <span class="meta">时长</span>
-                        <em></em>
+                    <div class="hd">
+                        <h2 class="l">{{ course.name }}</h2>
                     </div>
-                    <div class="static-item">
-                        <span class="meta-value"><strong>{{ course.students }}</strong></span>
-                        <span class="meta">学习人数</span>
-                        <em></em>
+                    <div class="statics clearfix">
+                        <div class="static-item ">
+                            <span class="meta-value"><strong>{{ course.get_degree_display }}</strong></span>
+                            <span class="meta">难度</span>
+                            <em></em>
+                        </div>
+                        <div class="static-item static-time">
+                            <span class="meta-value">{{ course.learn_times }}分钟</span>
+                            <span class="meta">时长</span>
+                            <em></em>
+                        </div>
+                        <div class="static-item">
+                            <span class="meta-value"><strong>{{ course.students }}</strong></span>
+                            <span class="meta">学习人数</span>
+                            <em></em>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        {% endblock %}
 
         <div class="course-info-main clearfix w has-progress">
 
@@ -87,8 +90,7 @@
                                             {# course-lesson-video #}
                                             {% for video in lesson.video %}
                                                 <li>
-                                                    <a target="_blank" href='/video/3662'
-                                                       class="J-media-item studyvideo">
+                                                    <a href='{% url 'course:video_play' video.id %}' class="J-media-item studyvideo">
                                                         {{ video.name }}
                                                         ({{ video.learn_times }}分钟)
                                                         <i class="study-state"></i>
@@ -158,7 +160,8 @@
                                             {% for course in relate_courses %}
                                                 <li class="curr">
                                                     <a href="{% url 'course:detail' course.id %}">
-                                                        <img src="{{ MEDIA_URL }}{{ course.image }}" alt="{{ course.name }}">
+                                                        <img src="{{ MEDIA_URL }}{{ course.image }}"
+                                                             alt="{{ course.name }}">
                                                         <span class="name autowrap">{{ course.name }}</span>
                                                     </a>
                                                 </li>

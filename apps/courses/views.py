@@ -5,7 +5,7 @@ from django.shortcuts import render
 from django.views.generic import View
 from pure_pagination import Paginator, PageNotAnInteger
 
-from .models import Course, CourseResource
+from .models import Course, CourseResource, Video
 from operation.models import UserFavorite, CourseComments, UserCourse
 from utils.function import order_by_occur_nums
 from utils.mixin_utils import LoginRequiredMixin
@@ -77,7 +77,7 @@ class CourseDetailView(View):
 
 
 class CourseInfoView(LoginRequiredMixin, View):
-    """课程视频页(用户点击开始学习后)"""
+    """课程介绍页(用户点击开始学习后)"""
 
     def get(self, request, course_id):
         course = Course.objects.get(id=int(course_id))
@@ -153,3 +153,45 @@ class AddCommentView(View):
         else:
             return HttpResponse('{"status": "fail", "msg": "添加失败"}',
                                 content_type='application/json')
+
+
+class CourseVideoView(View):
+    """课程视频播放"""
+
+    def get(self, request, video_id):
+        # 获取video及其course
+        video = Video.objects.get(id=int(video_id))
+        course = video.lesson.course
+
+        # 记录用户学习的课程: 关联用户-课程表
+        # 查询用户是否已经关联了该课程
+        user_course_record = UserCourse.objects.filter(user=request.user, course=course)
+        if not user_course_record:
+            user_course_record = UserCourse(user=request.user, course=course)
+            user_course_record.save()
+
+        # 推荐功能: 该课程的同学还学过..
+        # 找出该课程所有记录
+        user_coursers = UserCourse.objects.filter(course=course)
+        # 获取该课程记录的所有学生
+        user_ids = [user_courser.user.id for user_courser in user_coursers]
+        # 这些学生的所有课程记录
+        all_user_courses = UserCourse.objects.filter(user_id__in=user_ids)
+        # 取出所有课程id(该课程的同学还学过的所有课程id)
+        # 如 [1, 1, 2, 2, 2]
+        course_ids = [user_course.course.id for user_course in all_user_courses]
+        # 再按照课程id的重复次数进行排序
+        course_ids = order_by_occur_nums(course_ids)
+        # 按照排序后的课程进行逐个获取, 并依次加入relate_courses
+        relate_courses = []
+        for relate_course_id in course_ids:
+            relate_course = Course.objects.filter(id=relate_course_id).exclude(id=course.id)
+            # 取Top5
+            if relate_course and len(relate_courses) <= 5:
+                relate_courses.append(relate_course[0])
+
+        course_resources = CourseResource.objects.filter(course=course)
+        return render(request, 'course-play.html', {'course': course,
+                                                    'course_resources': course_resources,
+                                                    'relate_courses': relate_courses,
+                                                    'video': video})

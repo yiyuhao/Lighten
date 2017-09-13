@@ -1,0 +1,46 @@
+{% extends 'course-video.html' %}
+
+{% block title %}
+    {{ video.name }}
+{% endblock %}
+
+{% load staticfiles %}
+
+{% block custom_css %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/muke/base.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/muke/common-less.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/muke/course/learn-less.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/aui.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/mooc.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/muke/course/common-less.css' %}">
+
+    <link href="http://vjs.zencdn.net/6.2.7/video-js.css" rel="stylesheet">
+    <style>
+        .video-js .vjs-big-play-button {
+            top: 50%;
+            left: 50%;
+        }
+    </style>
+{% endblock %}
+
+{% block javascript %}
+    <script src="http://vjs.zencdn.net/6.2.7/video.js"></script>
+{% endblock %}
+
+{% block custom_bread_tail %}
+    <li><a href="{% url 'course:course_list' %}">公开课程</a>></li>
+    <li><a href="{% url 'course:detail' course.id %}">课程详情</a>></li>
+    <li><a href="{% url 'course:info' course.id %}">章节信息</a>></li>
+    <li>{{ video.name }}</li>
+{% endblock %}
+
+{# 重写course-video.html中的评论区域 #}
+{% block course_info_or_video %}
+    <div style="width: 1200px;height: 675px;margin: auto">
+        <video id="example_video_1" class="video-js vjs-default-skin" controls preload="auto" width="1200"
+               poster="http://video-js.zencoder.com/oceans-clip.png"
+               data-setup="{}">
+            <source src="{{ video.url }}" type="video/mp4">
+        </video>
+    </div>
+{% endblock %}
