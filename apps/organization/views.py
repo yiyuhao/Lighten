@@ -107,8 +107,19 @@ class OrgDetailCourseView(View):
                                                                                           fav_type=2) else False
 
         all_courses = course_org.course_set.all()
+
+        # 对课程进行分页
+        per_page = PAGINATION_SETTINGS.get('COURSE_NUM_PER_PAGE', 6)
+        paginator = Paginator(all_courses, per_page=per_page, request=request)
+        try:
+            page_num = int(request.GET.get('page', 1))
+        except PageNotAnInteger:
+            page_num = 1
+        # 分页后的课程
+        course_paginator = paginator.page(page_num)
+
         return render(request, 'org-detail-course.html', {'course_org': course_org,
-                                                          'all_courses': all_courses,
+                                                          'course_paginator': course_paginator,
                                                           'current_page': 'courses',
                                                           'has_fav': has_fav})
 

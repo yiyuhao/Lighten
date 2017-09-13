@@ -16,9 +16,10 @@
 
             {% for course in all_courses %}
                 <div class="module1_5 box">
-                    <a href="course-detail.html"><img width="214" src="{{ MEDIA_URL }}{{ course.image }}"/></a>
+                    <a href="{% url 'course:detail' course.id %}"><img width="214"
+                                                                       src="{{ MEDIA_URL }}{{ course.image }}"/></a>
                     <div class="des">
-                        <a href="course-detail.html"><h2>{{ course.name }}</h2></a>
+                        <a href="{% url 'course:detail' course.id %}"><h2>{{ course.name }}</h2></a>
                         <span class="fl">课时：<i class="key">{{ course.learn_times }}</i></span>
                         <span class="fr">参加人数：{{ course.student_nums }}</span>
                     </div>
@@ -44,18 +45,31 @@
                 <div class="module5 share company-diary-box" style="padding:10px 0;">
                     {# 教师名 #}
                     <div class="left">
-                        <img class="pic" src="{{ MEDIA_URL }}{{ teacher.image }}"/>
-                        <p>{{ teacher.name }}</p>
+                        <a href="{% url 'org:teacher_detail' teacher.id %}">
+                            <img class="pic" src="{{ MEDIA_URL }}{{ teacher.image }}"/>
+                            <p>{{ teacher.name }}</p>
+                        </a>
                     </div>
                     {# 教师课程 #}
                     <div class="right">
-                        <div class="top">
-                            <div class="fl">
-                                <a href=""><h1>填充数据java开发教程</h1></a>
-                                <span>填充数据发表于：2015-10-12</span>
+                        {# 老师无课程展示 #}
+                        {% if not teacher.hot_course %}
+                            <div class="top">
+                                <div class="fl">
+                                    <h1>这个老师还没有发布课程噢</h1>
+                                </div>
                             </div>
-                        </div>
-                        <div class="middle" style="border-bottom:0;">填充数据课程介绍</div>
+                            {# 展示学习人数最多的课程 #}
+                        {% else %}
+                            <div class="top">
+                                <div class="fl">
+                                    <a href="{% url 'course:detail' teacher.hot_course.id %}">
+                                        <h1>{{ teacher.hot_course.name }}</h1></a>
+                                    <span>发表于：{{ teacher.hot_course.add_time.date }}</span>
+                                </div>
+                            </div>
+                            <div class="middle" style="border-bottom:0;">{{ teacher.hot_course.desc }}</div>
+                        {% endif %}
                     </div>
                 </div>
             </div>

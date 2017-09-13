@@ -44,8 +44,7 @@
                                 <li class="piclist"><span class="pram word4">学习用户：</span>
                                     {% for user_course in course.learning_user_courses %}
                                         <span class="pic"><img width="40" height="40"
-                                                               src="
-                                                                       {{ MEDIA_URL }}{{ user_course.user.image }}"/></span>
+                                                               src="{{ MEDIA_URL }}{{ user_course.user.image }}"/></span>
                                     {% endfor %}
 
                                 </li>
@@ -81,11 +80,11 @@
                             <p>填充数据世界名校，课程权威</p>
                         </div>
                         <div class="pic">
-                            <a href="/company/14/">
+                            <a href="{% url 'org:org_home' course.course_org.id %}">
                                 <img width="150" height="80" src="{{ MEDIA_URL }}{{ course.course_org.image }}"/>
                             </a>
                         </div>
-                        <a href="/company/14/">
+                        <a href="{% url 'org:org_home' course.course_org.id %}">
                             <h2 class="center" title="{{ course.course_org.name }}">{{ course.course_org.name }}</h2>
                         </a>
                         <div class="btn notlogin
@@ -173,7 +172,7 @@
                 success: function (data) {
                     if (data.status == 'fail') {
                         if (data.msg == '用户未登录') {
-                            window.location.href = "login.html";
+                            window.location.href = "/login/";
                         } else {
                             current_elem.text(data.msg)
                         }

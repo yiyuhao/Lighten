@@ -69,3 +69,11 @@ class Teacher(models.Model):
 
     def __unicode__(self):
         return '{name} ({org})'.format(name=self.name, org=self.org)
+
+    @property
+    def hot_course(self):
+        hot_course = self.course_set.order_by('-students')[:1]
+        if hot_course:
+            return hot_course[0]
+        else:
+            return None

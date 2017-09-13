@@ -13,14 +13,14 @@
         </div>
         <div class="brief group_list">
 
-            {% for course in all_courses %}
+            {% for course in course_paginator.object_list %}
                 <div class="module1_5 box">
-                    <a class="comp-img-box" href="course-detail.html">
+                    <a class="comp-img-box" href="{% url 'course:detail' course.id %}">
 
                         <img width="214" height="195" src="{{ MEDIA_URL }}{{ course.image }}"/>
                     </a>
                     <div class="des">
-                        <a href="course-detail.html"><h2>{{ course.name }}</h2></a>
+                        <a href="{% url 'course:detail' course.id %}"><h2>{{ course.name }}</h2></a>
                         <span class="fl">课时：<i class="key">{{ course.learn_times }}</i></span>
                         <span class="fr">学习人数：{{ course.students }}</span>
                     </div>
@@ -35,9 +35,45 @@
             {% endfor %}
 
         </div>
+    
+        {# 分页 #}
+        {% load i18n %}
         <div class="pageturn">
             <ul class="pagelist">
-                <li class="active"><a href="?page=1">1</a></li>
+
+                {# 上一页 #}
+                {% if course_paginator.has_previous %}
+                    <li class="long">
+                        {# *.querystring 如: 'page=1' #}
+                        <a href="?{{ course_paginator.previous_page_number.querystring }}">
+                            上一页
+                        </a>
+                    </li>
+                {% endif %}
+
+                {# 分页主体 #}
+                {% for page in course_paginator.pages %}
+                    {# p.pages返回如: 1, 2, None, 5, 6, None, 9 #}
+                    {% if page %}
+                        {# 当前页面高亮显示 #}
+                        <li{% if page == course_paginator.number %} class="active"{% endif %}>
+                            <a href="?{{ page.querystring }}">
+                                {{ page }}
+                            </a>
+                        </li>
+                    {% else %}
+                        <li>...</li>
+                    {% endif %}
+                {% endfor %}
+
+                {# 下一页 #}
+                {% if course_paginator.has_next %}
+                    <li class="long">
+                        <a href="?{{ course_paginator.next_page_number.querystring }}">
+                            下一页
+                        </a>
+                    </li>
+                {% endif %}
             </ul>
         </div>
     </div>

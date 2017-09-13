@@ -122,7 +122,7 @@
                             </dt>
                         </a>
                         <dd>
-                            <a href="/diary/hk_detail/6/">
+                            <a href="{% url 'org:teacher_detail' teacher.id %}">
                                 <h1 title="{{ teacher.name }}">{{ teacher.name }}</h1>
                             </a>
                             <p>工作年限：<span>{{ teacher.work_years }}年</span></p>
