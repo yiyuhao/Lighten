@@ -40,7 +40,8 @@
         <video id="example_video_1" class="video-js vjs-default-skin" controls preload="auto" width="1200"
                poster="http://video-js.zencoder.com/oceans-clip.png"
                data-setup="{}">
-            <source src="{{ video.url }}" type="video/mp4">
+            <source src="{{ video.url }}"
+                    type="video/{% if video.type %}{{ video.type }}{% else %}mp4{% endif %}">
         </video>
     </div>
 {% endblock %}
