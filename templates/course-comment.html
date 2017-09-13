@@ -25,6 +25,23 @@
 
 {# 重写course-video.html中的评论区域 #}
 {% block lesson_or_comment %}
+    {# 标签页(章节/评论) #}
+    <div class="mod-tab-menu">
+        <ul class="course-menu clearfix">
+            <li><a class="ui-tabs-active" id="learnOn"
+                   href="{% url 'course:info' course.id %}"><span>章节</span></a></li>
+            <li><a id="commentOn" class="active"
+                   href="{% url 'course:comment' course.id %}"><span>评论</span></a></li>
+        </ul>
+    </div>
+    {% if course.notice %}
+        <div id="notice" class="clearfix">
+            <div class="l"><strong>课程公告:</strong>
+                <a href="javascript:void(0)">{{ course.notice }}</a>
+            </div>
+        </div>
+    {% endif %}
+
     {# 评论 #}
     <div id="js-pub-container" class="issques clearfix js-form">
         <div class="wgt-ipt-wrap pub-editor-wrap " id="js-pl-input-fake">

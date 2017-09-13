@@ -55,24 +55,26 @@
             <div class="info-bar clearfix">
                 <div class="content-wrap clearfix">
                     <div class="content">
-                        <div class="mod-tab-menu">
-                            <ul class="course-menu clearfix">
-                                <li><a class="ui-tabs-active active" id="learnOn"
-                                       href="{% url 'course:info' course.id %}"><span>章节</span></a></li>
-                                <li><a id="commentOn" class=""
-                                       href="{% url 'course:comment' course.id %}"><span>评论</span></a></li>
-                            </ul>
-                        </div>
-                        {% if course.notice %}
-                            <div id="notice" class="clearfix">
-                                <div class="l"><strong>课程公告:</strong>
-                                    <a href="javascript:void(0)">{{ course.notice }}</a>
-                                </div>
-                            </div>
-                        {% endif %}
 
                         {# 章节或者评论，用于被course-comment.html继承重写 #}
                         {% block lesson_or_comment %}
+                            {# 标签页(章节/评论) #}
+                            <div class="mod-tab-menu">
+                                <ul class="course-menu clearfix">
+                                    <li><a class="ui-tabs-active active" id="learnOn"
+                                           href="{% url 'course:info' course.id %}"><span>章节</span></a></li>
+                                    <li><a id="commentOn" class=""
+                                           href="{% url 'course:comment' course.id %}"><span>评论</span></a></li>
+                                </ul>
+                            </div>
+                            {% if course.notice %}
+                                <div id="notice" class="clearfix">
+                                    <div class="l"><strong>课程公告:</strong>
+                                        <a href="javascript:void(0)">{{ course.notice }}</a>
+                                    </div>
+                                </div>
+                            {% endif %}
+
                             {# 课程章节 #}
                             <div class="mod-chapters">
                                 {# course-lesson #}
