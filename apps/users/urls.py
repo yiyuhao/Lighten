@@ -2,7 +2,7 @@
 
 from django.conf.urls import url
 
-from .views import UserInfoView, UploadImageView, UpdatePasswordView, SendEmailCodeView
+from .views import UserInfoView, UploadImageView, UpdatePasswordView, SendEmailCodeView, UpdateEmailView
 
 urlpatterns = [
     # 用户信息
@@ -14,6 +14,9 @@ urlpatterns = [
     # 用户个人中心修改密码
     url(r'^update/pwd/$', UpdatePasswordView.as_view(), name='update_pwd'),
 
-    # 用户个人中心修改密码
-    url(r'^send_email_code/$', SendEmailCodeView.as_view(), name='send_email_code')
+    # 发送邮箱验证码(用户更改绑定邮箱时)
+    url(r'^send_email_code/$', SendEmailCodeView.as_view(), name='send_email_code'),
+
+    # 修改邮箱
+    url(r'^update_email/$', UpdateEmailView.as_view(), name='update_email')
 ]

@@ -42,6 +42,7 @@ def send_register_email(email_to, send_type='register', user_new_email=''):
     email_record = EmailVerifyRecord()
     email_record.code = random_str
     email_record.email = email_to
+    email_record.new_email = user_new_email
     email_record.send_type = send_type
     email_record.save()
 

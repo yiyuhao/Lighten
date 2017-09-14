@@ -192,7 +192,8 @@ class UpdatePasswordView(View):
             password_repeat = request.POST.get('password_repeat', '')
             # 验证两次密码输入一致
             if password != password_repeat:
-                return HttpResponse('{"status": "fail", "msg": "密码不一致"}', content_type='application/json')
+                return HttpResponse('{"status": "fail", "msg": "密码不一致"}',
+                                    content_type='application/json')
             # 更新用户密码
             user = request.user
             user.password = make_password(password)
@@ -214,3 +215,23 @@ class SendEmailCodeView(LoginRequiredMixin, View):
         send_register_email(email_to=request.user.email, send_type='update_email',
                             user_new_email=new_email)
         return HttpResponse('{"status": "success"}', content_type='application/json')
+
+
+class UpdateEmailView(View):
+    """修改用户绑定邮箱"""
+
+    def post(self, request):
+        # 新邮箱地址
+        new_email = request.POST.get('email', '')
+        # 验证码
+        code = request.POST.get('code', '')
+
+        existed_records = EmailVerifyRecord.objects.filter(email=request.user.email, code=code,
+                                                           new_email=new_email, send_type='update_email')
+        if existed_records:
+            user = request.user
+            user.email = new_email
+            user.save()
+            return HttpResponse('{"status": "success"}', content_type='application/json')
+        else:
+            return HttpResponse('{"email": "验证码无效"}', content_type='application/json')
