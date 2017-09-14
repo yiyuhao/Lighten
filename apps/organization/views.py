@@ -1,4 +1,5 @@
 # coding: utf-8
+from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.views.generic import View
@@ -27,11 +28,19 @@ class OrgView(View):
         # 城市
         all_cities = CityDict.objects.all()
 
-        # 根据城市筛选课程机构
-        if city_id:
-            all_organizations = CourseOrg.objects.filter(city_id=int(city_id))
+        # 课程搜索功能
+        search_keywords = request.GET.get('keywords', '')
+        if search_keywords:
+            all_organizations = CourseOrg.objects.filter(Q(name__icontains=search_keywords) |
+                                                         Q(desc__icontains=search_keywords) |
+                                                         Q(category__icontains=search_keywords) |
+                                                         Q(address__icontains=search_keywords))
         else:
             all_organizations = CourseOrg.objects.all()
+
+        # 根据城市筛选课程机构
+        if city_id:
+            all_organizations = all_organizations.filter(city_id=int(city_id))
 
         # 根据类别筛选课程机构
         if category:

@@ -1,6 +1,7 @@
 # coding: utf-8
 
 from django.http import HttpResponse
+from django.db.models import Q
 from django.shortcuts import render
 from django.views.generic import View
 from pure_pagination import Paginator, PageNotAnInteger
@@ -57,6 +58,17 @@ class CourseListView(View):
         all_courses = Course.objects.order_by('-add_time').all()
         # 热门课程推荐
         hot_courses = Course.objects.order_by('-click_nums').all()[:3]
+
+        # 课程搜索功能
+        search_keywords = request.GET.get('keywords', '')
+        if search_keywords:
+            all_courses = all_courses.filter(Q(name__icontains=search_keywords) |
+                                             Q(desc__icontains=search_keywords) |
+                                             Q(you_need_know__icontains=search_keywords) |
+                                             Q(teacher_tell__icontains=search_keywords) |
+                                             Q(degree__icontains=search_keywords) |
+                                             Q(category__icontains=search_keywords) |
+                                             Q(tag__icontains=search_keywords))
 
         sort = request.GET.get('sort', '')
 
