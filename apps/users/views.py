@@ -9,6 +9,7 @@ from django.views.generic.base import View
 from .models import UserProfile, EmailVerifyRecord
 from .forms import LoginForm, RegisterForm, ForgetPasswordForm, ModifyPasswordForm
 from utils.email_send import send_register_email
+from utils.mixin_utils import LoginRequiredMixin
 
 
 class CustomBackend(ModelBackend):
@@ -150,3 +151,14 @@ class ModifyPasswordView(View):
             # 密码修改成功, 返回登录界面
             return render(request, 'login.html')
         return render(request, 'password_reset.html', {'email': email, 'modify_form': modify_form})
+
+
+# ###################个人中心View################### #
+class UserInfoView(LoginRequiredMixin, View):
+    """
+        个人中心 - 用户个人信息
+    """
+
+    def get(self, request):
+        current_user = request.user
+        return render(request, 'usercenter-info.html', {'current_user': current_user})

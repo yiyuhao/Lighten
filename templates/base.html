@@ -34,9 +34,9 @@
 <body>
 
 {# 登陆栏、搜索、导航条 #}
-<section class="headerwrap ">
+<section class="headerwrap {% block is_headerwrap2 %}{% endblock %}">
     <header>
-        <div class=" header">
+        <div class="header {% block is_header2 %}{% endblock %}">
             {# 首行 #}
             <div class="top">
                 <div class="wp">
@@ -62,7 +62,7 @@
                                     </dd>
                                 </dl>
                                 <div class="btn">
-                                    <a class="personcenter fl" href="usercenter-info.html">进入个人中心</a>
+                                    <a class="personcenter fl" href="{% url 'user:user_info' %}">进入个人中心</a>
                                     <a class="fr" href="{% url 'logout' %}">退出</a>
                                 </div>
                             </div>
@@ -176,6 +176,10 @@
 </section>
 {% endblock %}
 {# sidebar #}
+
+{# dialog #}
+{% block dialog %}{% endblock %}
+{# dialog #}
 
 {# all #}
 <script src="{% static 'js/selectUi.js' %}" type='text/javascript'></script>
