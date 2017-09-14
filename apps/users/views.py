@@ -1,13 +1,16 @@
 # coding: utf-8
+import json
+
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth.hashers import make_password
 from django.db.models import Q
+from django.http import HttpResponse
 from django.views.generic.base import View
 
 from .models import UserProfile, EmailVerifyRecord
-from .forms import LoginForm, RegisterForm, ForgetPasswordForm, ModifyPasswordForm
+from .forms import LoginForm, RegisterForm, ForgetPasswordForm, ModifyPasswordForm, UploadImageForm
 from utils.email_send import send_register_email
 from utils.mixin_utils import LoginRequiredMixin
 
@@ -132,7 +135,7 @@ class ResetPasswordView(View):
 
 
 class ModifyPasswordView(View):
-    """提供表单给用户修改密码"""
+    """提供表单给用户修改密码(忘记密码)"""
 
     def post(self, request):
         modify_form = ModifyPasswordForm(request.POST)
@@ -162,3 +165,39 @@ class UserInfoView(LoginRequiredMixin, View):
     def get(self, request):
         current_user = request.user
         return render(request, 'usercenter-info.html', {'current_user': current_user})
+
+
+class UploadImageView(LoginRequiredMixin, View):
+    """
+        处理用户头像上传
+        个人中心 - 用户个人信息 - 头像上传
+    """
+
+    def post(self, request):
+        image_form = UploadImageForm(request.POST, request.FILES, instance=request.user)
+        if image_form.is_valid():
+            request.user.save()
+            return HttpResponse('{"status": "success"}', content_type='application/json')
+        else:
+            return HttpResponse('{"status": "fail"}', content_type='application/json')
+
+
+class UpdatePasswordView(View):
+    """个人中心修改密码"""
+
+    def post(self, request):
+        modify_form = ModifyPasswordForm(request.POST)
+        if modify_form.is_valid():
+            password = request.POST.get('password', '')
+            password_repeat = request.POST.get('password_repeat', '')
+            # 验证两次密码输入一致
+            if password != password_repeat:
+                return HttpResponse('{"status": "fail", "msg": "密码不一致"}', content_type='application/json')
+            # 更新用户密码
+            user = request.user
+            user.password = make_password(password)
+            user.save()
+            logout(request)
+            # 密码修改成功, 返回登录界面
+            return HttpResponse('{"status": "success"}', content_type='application/json')
+        return HttpResponse(json.dumps(modify_form.errors), content_type='application/json')
