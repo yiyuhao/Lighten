@@ -201,3 +201,16 @@ class UpdatePasswordView(View):
             # 密码修改成功, 返回登录界面
             return HttpResponse('{"status": "success"}', content_type='application/json')
         return HttpResponse(json.dumps(modify_form.errors), content_type='application/json')
+
+
+class SendEmailCodeView(LoginRequiredMixin, View):
+    """发送邮箱验证"""
+
+    def get(self, request):
+        new_email = request.GET.get('email', '')
+
+        if UserProfile.objects.filter(email=new_email):
+            return HttpResponse('{"email": "邮箱已经存在"}', content_type='application/json')
+        send_register_email(email_to=request.user.email, send_type='update_email',
+                            user_new_email=new_email)
+        return HttpResponse('{"status": "success"}', content_type='application/json')

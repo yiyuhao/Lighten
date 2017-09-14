@@ -184,8 +184,7 @@
                 <div class="button">
                     <input class="changeemai_btn" id="jsChangeEmailBtn" type="button" value="完成"/>
                 </div>
-                <input type='hidden' name='csrfmiddlewaretoken' value='DaP7IUKm9FA9nELA9YUlYYWpyIDdCiIP'/>
-                <input type='hidden' name='csrfmiddlewaretoken' value='799Y6iPeEDNSGvrTu3noBrO4MBLv6enY'/>
+                {% csrf_token %}
             </form>
         </div>
 
@@ -263,6 +262,7 @@
 {% block custom_js %}
     <script src="{% static 'js/plugins/jquery.upload.js' %}" type='text/javascript'></script>
     <script src="{% static 'js/validate.js' %}" type="text/javascript"></script>
+    <script src="{% static 'js/validateDialog.js' %}" type="text/javascript"></script>
     <script src="{% static 'js/deco-user.js' %}"></script>
 
     <script type="text/javascript">
