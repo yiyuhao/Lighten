@@ -208,6 +208,15 @@ class TeacherListView(View):
         else:
             all_teachers = Teacher.objects.all()
 
+        # 课程搜索功能
+        search_keywords = request.GET.get('keywords', '')
+        if search_keywords:
+            all_teachers = all_teachers.filter(Q(name__icontains=search_keywords) |
+                                               Q(academic_degree__icontains=search_keywords) |
+                                               Q(work_company__icontains=search_keywords) |
+                                               Q(work_position__icontains=search_keywords) |
+                                               Q(org__name__icontains=search_keywords))
+
         # 分页
         per_page = PAGINATION_SETTINGS.get('TEACHER_NUM_PER_PAGE', 10)
         paginator = Paginator(all_teachers.all(), per_page, request=request)
