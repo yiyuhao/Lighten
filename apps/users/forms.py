@@ -1,4 +1,6 @@
 # coding: utf-8
+import re
+
 from django import forms
 
 from captcha.fields import CaptchaField
@@ -47,3 +49,21 @@ class UploadImageForm(forms.ModelForm):
     class Meta:
         model = UserProfile
         fields = ['image']
+
+
+class UserInfoForm(forms.ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = ['nickname', 'gender', 'birthday', 'address', 'mobile']
+
+    def clean_mobile(self):
+        """
+        验证手机号码是否合法
+        :return: None
+        """
+        mobile = self.cleaned_data['mobile']
+        regex_mobile = '^1[358]\d{9}$|^147\d{8}$|^176\d{8}$'
+        if re.match(regex_mobile, mobile):
+            return mobile
+        else:
+            raise forms.ValidationError(u'无效的手机号码', code='mobile_invalid')

@@ -2,11 +2,6 @@
 
 {% load staticfiles %}
 
-{% block custom_bread_tail %}
-    {{ block.super }}
-    <li>个人信息</li>
-{% endblock %}
-
 {% block content_right %}
     <div class="right">
         <div class="personal_des ">
@@ -36,14 +31,14 @@
                            style="margin:80px auto;width:100px;">修改密码</a>
                     </div>
                 </div>
-                <form class="perinform" id="jsEditUserForm" autocomplete="off">
+                <form class="perinform" id="jsEditUserForm" autocomplete="off" action="{% url 'user:user_info' %}" method="post">
                     <ul class="right">
                         <li>昵&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;称：
-                            <input type="text" name="nick_name" id="nick_name" value="{{ current_user.nickname }}" maxlength="10">
+                            <input type="text" name="nickname" id="nick_name" value="{{ current_user.nickname }}" maxlength="10">
                             <i class="error-tips"></i>
                         </li>
                         <li>生&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;日：
-                            <input type="text" id="birth_day" name="birthday" value="{{ current_user.birthday }}"
+                            <input type="text" id="birth_day" name="birthday" value="{{ current_user.birthday|date:'Y-m-d' }}"
                                    readonly="readonly"/>
                             <i class="error-tips"></i>
                         </li>
@@ -59,14 +54,16 @@
                         <li>手&nbsp;&nbsp;机&nbsp;&nbsp;号：
                             <input type="text" name="mobile" id="mobile" placeholder="请输入你的手机号码" value="{{ current_user.mobile|default_if_none:'' }}"
                                    maxlength="11">
+                            <i class="error-tips"></i>
                         </li>
                         <li>邮&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;箱：
-                            <input class="borderno" type="text" name="email" readonly="readonly"
+                            <input class="borderno" type="text" id="email" name="email" readonly="readonly"
                                    value="{{ current_user.email }}"/>
                             <span class="green changeemai_btn">[修改]</span>
+                            <i class="error-tips"></i>
                         </li>
                         <li class="button heibtn">
-                            <input type="button" id="jsEditUserBtn" value="保存">
+                            <input type="submit" id="jsEditUserBtn" value="保存">
                         </li>
                     </ul>
                     {% csrf_token %}

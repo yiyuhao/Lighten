@@ -10,7 +10,7 @@ from django.http import HttpResponse
 from django.views.generic.base import View
 
 from .models import UserProfile, EmailVerifyRecord
-from .forms import LoginForm, RegisterForm, ForgetPasswordForm, ModifyPasswordForm, UploadImageForm
+from .forms import LoginForm, RegisterForm, ForgetPasswordForm, ModifyPasswordForm, UploadImageForm, UserInfoForm
 from utils.email_send import send_register_email
 from utils.mixin_utils import LoginRequiredMixin
 
@@ -55,8 +55,8 @@ class LogoutView(View):
     """退出登录"""
 
     def get(self, request):
-            logout(request)
-            return render(request, 'index.html')
+        logout(request)
+        return render(request, 'index.html')
 
 
 class RegisterView(View):
@@ -164,7 +164,18 @@ class UserInfoView(LoginRequiredMixin, View):
 
     def get(self, request):
         current_user = request.user
+        # current_user = UserProfile()
         return render(request, 'usercenter-info.html', {'current_user': current_user})
+
+    def post(self, request):
+        """修改用户信息"""
+
+        user_info_form = UserInfoForm(request.POST, instance=request.user)
+        if user_info_form.is_valid():
+            user_info_form.save()
+            return HttpResponse('{"status": "success"}', content_type='application/json')
+        else:
+            return HttpResponse(json.dumps(user_info_form.errors), content_type='application/json')
 
 
 class UploadImageView(LoginRequiredMixin, View):

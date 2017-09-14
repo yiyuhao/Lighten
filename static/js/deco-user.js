@@ -147,7 +147,7 @@ $(function(){
     //保存个人资料
     $('#jsEditUserBtn').on('click', function(){
         var _self = $(this),
-            $jsEditUserForm = $('#jsEditUserForm')
+            $jsEditUserForm = $('#jsEditUserForm');
             verify = verifySubmit(
             [
                 {id: '#nick_name', tips: Dml.Msg.epNickName, require: true}
@@ -168,12 +168,16 @@ $(function(){
                 _self.attr('disabled',true);
             },
             success: function(data) {
-                if(data.nick_name){
-                    _showValidateError($('#nick_name'), data.nick_name);
+                if(data.nickname){
+                    _showValidateError($('#nick_name'), data.nickname);
                 }else if(data.birday){
                    _showValidateError($('#birth_day'), data.birday);
                 }else if(data.address){
                    _showValidateError($('#address'), data.address);
+                }else if(data.mobile){
+                   _showValidateError($('#mobile'), data.mobile);
+                }else if(data.email){
+                   _showValidateError($('#email'), data.email);
                 }else if(data.status == "failure"){
                      Dml.fun.showTipsDialog({
                         title: '保存失败',

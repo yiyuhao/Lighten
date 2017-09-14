@@ -6,7 +6,7 @@ from .views import UserInfoView, UploadImageView, UpdatePasswordView, SendEmailC
 
 urlpatterns = [
     # 用户信息
-    url(r'^list$', UserInfoView.as_view(), name='user_info'),
+    url(r'^info/$', UserInfoView.as_view(), name='user_info'),
 
     # 处理用户头像上传
     url(r'^image/upload/$', UploadImageView.as_view(), name='upload_image'),
