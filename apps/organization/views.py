@@ -60,8 +60,7 @@ class OrgView(View):
                        'cur_city_id': city_id,
                        'category': category,
                        'hot_orgs': hot_orgs,
-                       'sort': sort,
-                       'current_page': 'org_list'})
+                       'sort': sort})
 
 
 class AddUserAskView(View):
@@ -212,8 +211,7 @@ class TeacherListView(View):
         # 讲师排行榜
         hot_teachers = Teacher.objects.order_by('-fav_nums')[:5]
 
-        return render(request, 'teachers-list.html', {'current_page': 'teacher_list',
-                                                      'teacher_paginator': teacher_paginator,
+        return render(request, 'teachers-list.html', {'teacher_paginator': teacher_paginator,
                                                       'teacher_nums': all_teachers.count(),
                                                       'hot_teachers': hot_teachers,
                                                       'sort': sort})
@@ -245,5 +243,4 @@ class TeacherDetailView(View):
                                                        'org_has_fav': org_has_fav,
                                                        'teacher_courses': teacher_courses,
                                                        'typical_courses': teacher_courses[:2],
-                                                       'current_page': 'teacher_list',
                                                        'hot_teachers': hot_teachers})

@@ -37,6 +37,7 @@
 <section class="headerwrap ">
     <header>
         <div class=" header">
+            {# 首行 #}
             <div class="top">
                 <div class="wp">
                     <div class="fl"><p>服务电话：<b>33333333</b></p></div>
@@ -72,6 +73,7 @@
 
             {# 搜索框与导航 #}
             {% block head_middle_nav %}
+                {# 搜索框 #}
                 <div class="middle">
                     <div class="wp">
                         <a href="{% url 'index' %}"><img class="fl" src="{% static 'images/logo.jpg' %}"/></a>
@@ -96,18 +98,20 @@
                     <div class="nav">
                         <div class="wp">
                             <ul>
-                                <li class="{% if not current_page %}active{% endif %}">
+                                <li class="{% if request.path == '/' %}active{% endif %}">
                                     <a href="{% url 'index' %}">首页</a>
                                 </li>
-                                <li class="{% if current_page == 'course_list' %}active{% endif %}">
+                                <li class="{% if request.path|slice:'7' == '/course' %}active{% endif %}">
                                     <a href="{% url 'course:course_list' %}">
                                         公开课<img class="hot" src="{% static 'images/nav_hot.png' %}">
                                     </a>
                                 </li>
-                                <li class="{% if current_page == 'teacher_list' %}active{% endif %}">
+                                <li class="{% if request.path|slice:'12' == '/org/teacher' %}active{% endif %}">
                                     <a href="{% url 'org:teacher_list' %}">授课教师</a>
                                 </li>
-                                <li class="{% if current_page == 'org_list' %}active{% endif %}"><a href="{% url 'org:org_list' %}">授课机构</a></li>
+                                <li class="{% if request.path|slice:'9' == '/org/list' %}active{% endif %}">
+                                    <a href="{% url 'org:org_list' %}">授课机构</a>
+                                </li>
                             </ul>
                         </div>
                     </div>

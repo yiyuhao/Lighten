@@ -12,6 +12,43 @@ from utils.mixin_utils import LoginRequiredMixin
 from Lighten.settings import PAGINATION_SETTINGS
 
 
+def get_related_courses(request, course):
+    """
+    根据当前course获取推荐课程(该课程的同学还学过)
+    :param   request:                   request对象
+    :param   course:                    Course()对象
+    :return: relate_courses   (list)    推荐课程
+    """
+
+    # 记录用户学习的课程: 关联用户-课程表
+    # 查询用户是否已经关联了该课程
+    user_course_record = UserCourse.objects.filter(user=request.user, course=course)
+    if not user_course_record:
+        user_course_record = UserCourse(user=request.user, course=course)
+        user_course_record.save()
+
+    # 推荐功能: 该课程的同学还学过..
+    # 找出该课程所有记录
+    user_coursers = UserCourse.objects.filter(course=course)
+    # 获取该课程记录的所有学生
+    user_ids = [user_courser.user.id for user_courser in user_coursers]
+    # 这些学生的所有课程记录
+    all_user_courses = UserCourse.objects.filter(user_id__in=user_ids)
+    # 取出所有课程id(该课程的同学还学过的所有课程id)
+    # 如 [1, 1, 2, 2, 2]
+    course_ids = [user_course.course.id for user_course in all_user_courses]
+    # 再按照课程id的重复次数进行排序
+    course_ids = order_by_occur_nums(course_ids)
+    # 按照排序后的课程进行逐个获取, 并依次加入relate_courses
+    relate_courses = []
+    for relate_course_id in course_ids:
+        relate_course = Course.objects.filter(id=relate_course_id).exclude(id=course.id)
+        # 取Top5
+        if relate_course and len(relate_courses) <= 5:
+            relate_courses.append(relate_course[0])
+    return relate_courses
+
+
 class CourseListView(View):
     """课程列表"""
 
@@ -39,8 +76,7 @@ class CourseListView(View):
         # 分页后的课程机构
         course_paginator = paginator.page(per_page)
 
-        return render(request, 'course-list.html', {'current_page': 'course_list',
-                                                    'hot_courses': hot_courses,
+        return render(request, 'course-list.html', {'hot_courses': hot_courses,
                                                     'course_paginator': course_paginator,
                                                     'sort': sort})
 
@@ -77,39 +113,16 @@ class CourseDetailView(View):
 
 
 class CourseInfoView(LoginRequiredMixin, View):
-    """课程介绍页(用户点击开始学习后)"""
+    """(用户点击开始学习后)课程章节页"""
 
     def get(self, request, course_id):
         course = Course.objects.get(id=int(course_id))
 
-        # 记录用户学习的课程: 关联用户-课程表
-        # 查询用户是否已经关联了该课程
-        user_course_record = UserCourse.objects.filter(user=request.user, course=course)
-        if not user_course_record:
-            user_course_record = UserCourse(user=request.user, course=course)
-            user_course_record.save()
-
-        # 推荐功能: 该课程的同学还学过..
-        # 找出该课程所有记录
-        user_coursers = UserCourse.objects.filter(course=course)
-        # 获取该课程记录的所有学生
-        user_ids = [user_courser.user.id for user_courser in user_coursers]
-        # 这些学生的所有课程记录
-        all_user_courses = UserCourse.objects.filter(user_id__in=user_ids)
-        # 取出所有课程id(该课程的同学还学过的所有课程id)
-        # 如 [1, 1, 2, 2, 2]
-        course_ids = [user_course.course.id for user_course in all_user_courses]
-        # 再按照课程id的重复次数进行排序
-        course_ids = order_by_occur_nums(course_ids)
-        # 按照排序后的课程进行逐个获取, 并依次加入relate_courses
-        relate_courses = []
-        for relate_course_id in course_ids:
-            relate_course = Course.objects.filter(id=relate_course_id).exclude(id=course.id)
-            # 取Top5
-            if relate_course and len(relate_courses) <= 5:
-                relate_courses.append(relate_course[0])
-
+        # 课程推荐(该课的同学还学过)
+        relate_courses = get_related_courses(request, course)
+        # 课程资源
         course_resources = CourseResource.objects.filter(course=course)
+
         return render(request, 'course-video.html', {'course': course,
                                                      'course_resources': course_resources,
                                                      'relate_courses': relate_courses})
@@ -120,16 +133,21 @@ class CourseCommentView(LoginRequiredMixin, View):
 
     def get(self, request, course_id):
         course = Course.objects.get(id=int(course_id))
+
         course_resources = CourseResource.objects.filter(course=course)
         course_comments = CourseComments.objects.filter(course=course)
 
+        # 课程推荐(该课的同学还学过)
+        relate_courses = get_related_courses(request, course)
+
         return render(request, 'course-comment.html', {'course': course,
                                                        'course_resources': course_resources,
-                                                       'course_comments': course_comments})
+                                                       'course_comments': course_comments,
+                                                       'relate_courses': relate_courses})
 
 
 class AddCommentView(View):
-    """添加评论"""
+    """ajax 添加评论"""
 
     def post(self, request):
 
@@ -170,27 +188,11 @@ class CourseVideoView(View):
             user_course_record = UserCourse(user=request.user, course=course)
             user_course_record.save()
 
-        # 推荐功能: 该课程的同学还学过..
-        # 找出该课程所有记录
-        user_coursers = UserCourse.objects.filter(course=course)
-        # 获取该课程记录的所有学生
-        user_ids = [user_courser.user.id for user_courser in user_coursers]
-        # 这些学生的所有课程记录
-        all_user_courses = UserCourse.objects.filter(user_id__in=user_ids)
-        # 取出所有课程id(该课程的同学还学过的所有课程id)
-        # 如 [1, 1, 2, 2, 2]
-        course_ids = [user_course.course.id for user_course in all_user_courses]
-        # 再按照课程id的重复次数进行排序
-        course_ids = order_by_occur_nums(course_ids)
-        # 按照排序后的课程进行逐个获取, 并依次加入relate_courses
-        relate_courses = []
-        for relate_course_id in course_ids:
-            relate_course = Course.objects.filter(id=relate_course_id).exclude(id=course.id)
-            # 取Top5
-            if relate_course and len(relate_courses) <= 5:
-                relate_courses.append(relate_course[0])
-
+        # 课程推荐(该课的同学还学过)
+        relate_courses = get_related_courses(request, course)
+        # 课程资源
         course_resources = CourseResource.objects.filter(course=course)
+
         return render(request, 'course-play.html', {'course': course,
                                                     'course_resources': course_resources,
                                                     'relate_courses': relate_courses,
