@@ -6,7 +6,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth.hashers import make_password
 from django.db.models import Q
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic.base import View
 
 from .models import UserProfile, EmailVerifyRecord
@@ -64,7 +64,8 @@ class LogoutView(View):
     def get(self, request):
         request.user.log('退出登录')
         logout(request)
-        return render(request, 'index.html')
+        from django.core.urlresolvers import reverse
+        return HttpResponseRedirect(reverse("index"))
 
 
 class RegisterView(View):
