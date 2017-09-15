@@ -11,7 +11,9 @@ from django.views.generic.base import View
 
 from .models import UserProfile, EmailVerifyRecord
 from .forms import LoginForm, RegisterForm, ForgetPasswordForm, ModifyPasswordForm, UploadImageForm, UserInfoForm
-from operation.models import UserCourse
+from courses.models import Course
+from operation.models import UserCourse, UserFavorite, UserMessage
+from organization.models import CourseOrg, Teacher
 from utils.email_send import send_register_email
 from utils.mixin_utils import LoginRequiredMixin
 
@@ -255,3 +257,39 @@ class MyCourseView(View):
     def get(self, request):
         user_courses = UserCourse.objects.filter(user=request.user)
         return render(request, 'usercenter-mycourse.html', {'user_courses': user_courses})
+
+
+class FavOrgView(View):
+    """收藏机构"""
+
+    def get(self, request):
+        # (1, u'课程'), (2, u'课程机构'), (3, u'讲师')
+        user_favorites = UserFavorite.objects.filter(user=request.user, fav_type=2)
+        user_fav_orgs = []
+        for i in user_favorites:
+            user_fav_orgs.append(CourseOrg.objects.get(id=i.fav_id))
+        return render(request, 'usercenter-fav-org.html', {'user_fav_orgs': user_fav_orgs})
+
+
+class FavTeacherView(View):
+    """收藏教师"""
+
+    def get(self, request):
+        # (1, u'课程'), (2, u'课程机构'), (3, u'讲师')
+        user_favorites = UserFavorite.objects.filter(user=request.user, fav_type=3)
+        user_fav_teachers = []
+        for i in user_favorites:
+            user_fav_teachers.append(Teacher.objects.get(id=i.fav_id))
+        return render(request, 'usercenter-fav-teacher.html', {'user_fav_teachers': user_fav_teachers})
+
+
+class FavCourseView(View):
+    """收藏课程"""
+
+    def get(self, request):
+        # (1, u'课程'), (2, u'课程机构'), (3, u'讲师')
+        user_favorites = UserFavorite.objects.filter(fav_type=1)
+        user_fav_courses = []
+        for i in user_favorites:
+            user_fav_courses.append(Course.objects.get(id=i.fav_id))
+        return render(request, 'usercenter-fav-course.html', {'user_fav_courses': user_fav_courses})

@@ -77,3 +77,7 @@ class Teacher(models.Model):
             return hot_course[0]
         else:
             return None
+
+    @property
+    def course_nums(self):
+        return self.course_set.count()
