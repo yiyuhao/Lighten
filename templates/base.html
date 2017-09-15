@@ -67,6 +67,9 @@
                                 </div>
                             </div>
                         </div>
+                        <a href="{% url 'user:messages' %}">
+                            <div class="msg-num"><span id="MsgNum">{{ request.user.unread_nums }}</span></div>
+                        </a>
                     {% endif %}
                 </div>
             </div>

@@ -21,13 +21,6 @@ def get_related_courses(request, course):
     :return: relate_courses   (list)    推荐课程
     """
 
-    # 记录用户学习的课程: 关联用户-课程表
-    # 查询用户是否已经关联了该课程
-    user_course_record = UserCourse.objects.filter(user=request.user, course=course)
-    if not user_course_record:
-        user_course_record = UserCourse(user=request.user, course=course)
-        user_course_record.save()
-
     # 推荐功能: 该课程的同学还学过..
     # 找出该课程所有记录
     user_coursers = UserCourse.objects.filter(course=course)
@@ -130,6 +123,15 @@ class CourseInfoView(LoginRequiredMixin, View):
     def get(self, request, course_id):
         course = Course.objects.get(id=int(course_id))
 
+        # 记录用户学习的课程: 关联用户-课程表
+        # 查询用户是否已经关联了该课程
+        user_course_record = UserCourse.objects.filter(user=request.user, course=course)
+        if not user_course_record:
+            user_course_record = UserCourse(user=request.user, course=course)
+            user_course_record.save()
+            request.user.log('开始学习课程: {}'.format(course.name))
+        request.user.log('继续学习课程: {}'.format(course.name))
+
         # 课程推荐(该课的同学还学过)
         relate_courses = get_related_courses(request, course)
         # 课程资源
@@ -178,6 +180,7 @@ class AddCommentView(View):
             course_comment.comments = comment
             course_comment.user = request.user
             course_comment.save()
+            request.user.log('在{course}下发表评论: {comment}'.format(course=course.name, comment=comment))
             return HttpResponse('{"status": "success", "msg": "添加成功"}',
                                 content_type='application/json')
         else:
@@ -202,6 +205,7 @@ class CourseVideoView(View):
 
         # 课程推荐(该课的同学还学过)
         relate_courses = get_related_courses(request, course)
+
         # 课程资源
         course_resources = CourseResource.objects.filter(course=course)
 

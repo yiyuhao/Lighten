@@ -14,8 +14,10 @@ from .forms import LoginForm, RegisterForm, ForgetPasswordForm, ModifyPasswordFo
 from courses.models import Course
 from operation.models import UserCourse, UserFavorite, UserMessage
 from organization.models import CourseOrg, Teacher
+from pure_pagination import PageNotAnInteger, Paginator
 from utils.email_send import send_register_email
 from utils.mixin_utils import LoginRequiredMixin
+from Lighten.settings import PAGINATION_SETTINGS
 
 
 class CustomBackend(ModelBackend):
@@ -42,9 +44,11 @@ class LoginView(View):
             # 尝试认证用户并返回user
             user = authenticate(username=username, password=password)
             if user:
+                user.log('尝试登录Lighten')
                 # 用户已激活 login用户并重定向至主页
                 if user.is_active:
                     login(request, user)
+                    user.log('成功登录Lighten')
                     return render(request, 'index.html')
                 # 用户未激活 返回提示信息
                 return render(request, 'login.html', {'msg': '请前往邮箱激活'})
@@ -58,6 +62,7 @@ class LogoutView(View):
     """退出登录"""
 
     def get(self, request):
+        request.user.log('退出登录')
         logout(request)
         return render(request, 'index.html')
 
@@ -85,6 +90,7 @@ class RegisterView(View):
             user.password = make_password(password)
             user.is_active = False
             user.save()
+            user.log('欢迎注册Lighten-中国成都市龙泉驿区北泉路最大的的在线教育网站')
             # 发送注册邮件
             send_register_email(email, 'register')
             return render(request, 'login.html')
@@ -103,6 +109,7 @@ class ActiveUserView(View):
                 user = UserProfile.objects.get(email=record.email)
                 user.is_active = True
                 user.save()
+                user.log('你已激活')
             return render(request, 'login.html')
         else:
             return render(request, 'active_fail.html')
@@ -137,7 +144,7 @@ class ResetPasswordView(View):
             return render(request, 'active_fail.html')
 
 
-class ModifyPasswordView(View):
+class ModifyPasswordView(LoginRequiredMixin, View):
     """提供表单给用户修改密码(忘记密码)"""
 
     def post(self, request):
@@ -154,6 +161,7 @@ class ModifyPasswordView(View):
             user = UserProfile.objects.get(email=email)
             user.password = make_password(password)
             user.save()
+            user.log('(通过邮箱验证)重置了密码')
             # 密码修改成功, 返回登录界面
             return render(request, 'login.html')
         return render(request, 'password_reset.html', {'email': email, 'modify_form': modify_form})
@@ -176,6 +184,7 @@ class UserInfoView(LoginRequiredMixin, View):
         user_info_form = UserInfoForm(request.POST, instance=request.user)
         if user_info_form.is_valid():
             user_info_form.save()
+            request.user.log('修改了个人信息')
             return HttpResponse('{"status": "success"}', content_type='application/json')
         else:
             return HttpResponse(json.dumps(user_info_form.errors), content_type='application/json')
@@ -191,15 +200,17 @@ class UploadImageView(LoginRequiredMixin, View):
         image_form = UploadImageForm(request.POST, request.FILES, instance=request.user)
         if image_form.is_valid():
             request.user.save()
+            request.user.log('修改了头像')
             return HttpResponse('{"status": "success"}', content_type='application/json')
         else:
             return HttpResponse('{"status": "fail"}', content_type='application/json')
 
 
-class UpdatePasswordView(View):
+class UpdatePasswordView(LoginRequiredMixin, View):
     """个人中心修改密码"""
 
     def post(self, request):
+        request.user.log('尝试修改密码')
         modify_form = ModifyPasswordForm(request.POST)
         if modify_form.is_valid():
             password = request.POST.get('password', '')
@@ -212,6 +223,7 @@ class UpdatePasswordView(View):
             user = request.user
             user.password = make_password(password)
             user.save()
+            user.log('成功修改密码')
             logout(request)
             # 密码修改成功, 返回登录界面
             return HttpResponse('{"status": "success"}', content_type='application/json')
@@ -231,10 +243,11 @@ class SendEmailCodeView(LoginRequiredMixin, View):
         return HttpResponse('{"status": "success"}', content_type='application/json')
 
 
-class UpdateEmailView(View):
+class UpdateEmailView(LoginRequiredMixin, View):
     """修改用户绑定邮箱"""
 
     def post(self, request):
+        request.user.log('尝试修改绑定邮箱')
         # 新邮箱地址
         new_email = request.POST.get('email', '')
         # 验证码
@@ -244,6 +257,7 @@ class UpdateEmailView(View):
                                                            new_email=new_email, send_type='update_email')
         if existed_records:
             user = request.user
+            user.log('绑定邮箱已由{old_email}修改为{new_email}'.format(old_email=user.email, new_email=new_email))
             user.email = new_email
             user.save()
             return HttpResponse('{"status": "success"}', content_type='application/json')
@@ -251,7 +265,7 @@ class UpdateEmailView(View):
             return HttpResponse('{"email": "验证码无效"}', content_type='application/json')
 
 
-class MyCourseView(View):
+class MyCourseView(LoginRequiredMixin, View):
     """我的课程"""
 
     def get(self, request):
@@ -259,7 +273,7 @@ class MyCourseView(View):
         return render(request, 'usercenter-mycourse.html', {'user_courses': user_courses})
 
 
-class FavOrgView(View):
+class FavOrgView(LoginRequiredMixin, View):
     """收藏机构"""
 
     def get(self, request):
@@ -271,7 +285,7 @@ class FavOrgView(View):
         return render(request, 'usercenter-fav-org.html', {'user_fav_orgs': user_fav_orgs})
 
 
-class FavTeacherView(View):
+class FavTeacherView(LoginRequiredMixin, View):
     """收藏教师"""
 
     def get(self, request):
@@ -283,7 +297,7 @@ class FavTeacherView(View):
         return render(request, 'usercenter-fav-teacher.html', {'user_fav_teachers': user_fav_teachers})
 
 
-class FavCourseView(View):
+class FavCourseView(LoginRequiredMixin, View):
     """收藏课程"""
 
     def get(self, request):
@@ -293,3 +307,27 @@ class FavCourseView(View):
         for i in fav_records:
             user_fav_courses.append(Course.objects.get(id=i.fav_id))
         return render(request, 'usercenter-fav-course.html', {'user_fav_courses': user_fav_courses})
+
+
+class UserMessageView(LoginRequiredMixin, View):
+    """用户消息"""
+
+    def get(self, request):
+        # UserMessage.user == 0 代表全体消息
+        messages = UserMessage.objects.filter(Q(user=request.user.id) | Q(user=0)).order_by('-add_time')
+
+        # 所有消息标为已读
+        for msg in messages:
+            msg.has_read = True
+            msg.save()
+
+        # 对消息进行分页
+        per_page = PAGINATION_SETTINGS.get('MESSAGE_NUM_PER_PAGE', 10)
+        p = Paginator(messages, per_page, request=request)
+        try:
+            page_num = int(request.GET.get('page', 1))
+        except PageNotAnInteger:
+            page_num = 1
+        messages_paginator = p.page(page_num)
+
+        return render(request, 'usercenter-message.html', {'messages_paginator': messages_paginator})
