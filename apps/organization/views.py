@@ -89,6 +89,11 @@ class OrgDetailHomepageView(View):
 
     def get(self, request, org_id):
         course_org = CourseOrg.objects.get(id=int(org_id))
+
+        # 点击数 +1
+        course_org.click_nums += 1
+        course_org.save()
+
         # 用户为登录状态时显示收藏状态
         has_fav = True if request.user.is_authenticated() and UserFavorite.objects.filter(user=request.user,
                                                                                           fav_id=course_org.id,
@@ -171,7 +176,9 @@ class AddFavView(View):
 
         # 用于记录用户操作 获取用户收藏的对象name(课程名称、机构名称或讲师名字)
         fav_types = {1: (Course, '课程'), 2: (CourseOrg, '课程机构'), 3: (Teacher, '讲师')}
-        obj_name = fav_types[fav_type][0].objects.get(id=fav_id).name
+        # obj指代一种model obj， 如Course、CourseOrg或Teacher
+        obj = fav_types[fav_type][0].objects.get(id=fav_id)
+        obj_name = obj.name
         obj_type = fav_types[fav_type][1]
 
         # 用户必须为登录状态
@@ -185,16 +192,21 @@ class AddFavView(View):
             exist_records.delete()
             # 记录用户操作
             request.user.log('取消了收藏({type}): {name}'.format(type=obj_type, name=obj_name))
+
+            # 收藏数 -1   判断>0是开发调试过程需要 亦可保证安全
+            if obj.fav_nums > 0:
+                obj.fav_nums -= 1
+                obj.save()
             return HttpResponse('{"status": "success", "msg": "收藏"}',
                                 content_type='application/json')
         else:
-            # 添加用户收藏
-            user_fav = UserFavorite()
             if fav_id > 0 and fav_type > 0:
-                user_fav.user = request.user
-                user_fav.fav_id = fav_id
-                user_fav.fav_type = fav_type
+                # 添加用户收藏
+                user_fav = UserFavorite(user=request.user, fav_id=fav_id, fav_type=fav_type)
                 user_fav.save()
+                # 收藏数 +1
+                obj.fav_nums += 1
+                obj.save()
 
                 # 记录用户操作
                 request.user.log('收藏了{type}: {name}'.format(type=obj_type, name=obj_name))
@@ -253,6 +265,10 @@ class TeacherDetailView(View):
 
     def get(self, request, teacher_id):
         teacher = Teacher.objects.get(id=teacher_id)
+        # 点击数 +1
+        teacher.click_nums +=1
+        teacher.save()
+
         teacher_has_fav = True if request.user.is_authenticated() and UserFavorite.objects.filter(user=request.user,
                                                                                                   fav_id=teacher_id,
                                                                                                   # 3为教师类型
