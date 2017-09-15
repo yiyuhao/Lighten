@@ -22,7 +22,7 @@ import xadmin
 from users.views import LoginView, LogoutView, RegisterView, ActiveUserView, \
     ForgetPasswordView, ResetPasswordView, ModifyPasswordView, IndexView
 
-from Lighten.settings import MEDIA_ROOT
+from Lighten.settings import MEDIA_ROOT, STATIC_ROOT
 
 urlpatterns = [
     url(r'^xadmin/', xadmin.site.urls),
@@ -49,7 +49,13 @@ urlpatterns = [
 
     # 上传文件的访问处理函数
     url(r'^media/(?P<path>.*$)', serve, {'document_root': MEDIA_ROOT}),
+    # setting中关闭DEBUG时, 加入static的处理函数
+    url(r'^static/(?P<path>.*)$', serve, {'document_root': STATIC_ROOT}),
 
     # 个人中心url配置
     url(r'^users/', include('users.urls', namespace='user'))
 ]
+
+# 全局404页面配置
+handler404 = 'users.views.page_not_found'
+handler500 = 'users.views.server_internal_error'

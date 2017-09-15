@@ -7,7 +7,7 @@ from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth.hashers import make_password
 from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, render_to_response
 from django.views.generic.base import View
 
 from .models import UserProfile, EmailVerifyRecord, Banner
@@ -349,3 +349,19 @@ class UserMessageView(LoginRequiredMixin, View):
         messages_paginator = p.page(page_num)
 
         return render(request, 'usercenter-message.html', {'messages_paginator': messages_paginator})
+
+
+def page_not_found(request):
+    """全局404处理函数"""
+
+    response = render_to_response('404.html', {})
+    response.status_code = 404
+    return response
+
+
+def server_internal_error(request):
+    """全局500处理函数"""
+
+    response = render_to_response('500.html', {})
+    response.status_code = 500
+    return response
