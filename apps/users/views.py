@@ -1,15 +1,16 @@
 # coding: utf-8
 import json
 
-from django.shortcuts import render
+from django.core.urlresolvers import reverse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth.hashers import make_password
 from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import render
 from django.views.generic.base import View
 
-from .models import UserProfile, EmailVerifyRecord
+from .models import UserProfile, EmailVerifyRecord, Banner
 from .forms import LoginForm, RegisterForm, ForgetPasswordForm, ModifyPasswordForm, UploadImageForm, UserInfoForm
 from courses.models import Course
 from operation.models import UserCourse, UserFavorite, UserMessage
@@ -28,6 +29,23 @@ class CustomBackend(ModelBackend):
                 return user
         except:
             return None
+
+
+class IndexView(View):
+    """首页"""
+
+    def get(self, request):
+        # 轮播图
+        banners = Banner.objects.order_by('index').all()
+        # 课程
+        courses = Course.objects.filter(is_banner=False).order_by('-students')[:5]
+        banner_courses = Course.objects.filter(is_banner=True)[:3]
+        # 机构
+        course_orgs = CourseOrg.objects.all()[:15]
+        return render(request, 'index.html', {'banners': banners,
+                                              'courses': courses,
+                                              'banner_courses': banner_courses,
+                                              'course_orgs': course_orgs,})
 
 
 class LoginView(View):
@@ -49,7 +67,7 @@ class LoginView(View):
                 if user.is_active:
                     login(request, user)
                     user.log('成功登录Lighten')
-                    return render(request, 'index.html')
+                    return HttpResponseRedirect(reverse('index'))
                 # 用户未激活 返回提示信息
                 return render(request, 'login.html', {'msg': '请前往邮箱激活'})
             # 用户名密码错误
@@ -64,7 +82,6 @@ class LogoutView(View):
     def get(self, request):
         request.user.log('退出登录')
         logout(request)
-        from django.core.urlresolvers import reverse
         return HttpResponseRedirect(reverse("index"))
 
 
@@ -145,7 +162,7 @@ class ResetPasswordView(View):
             return render(request, 'active_fail.html')
 
 
-class ModifyPasswordView(LoginRequiredMixin, View):
+class ModifyPasswordView(View):
     """提供表单给用户修改密码(忘记密码)"""
 
     def post(self, request):

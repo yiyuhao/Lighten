@@ -12,6 +12,7 @@ class Course(models.Model):
     course_org = models.ForeignKey(CourseOrg, verbose_name=u'课程机构', null=True, blank=True)
     desc = models.CharField(max_length=300, verbose_name=u'课程描述')
     detail = models.TextField(verbose_name=u'课程详情')
+    is_banner = models.BooleanField(default=False, verbose_name=u'是否轮播')
     teacher = models.ForeignKey(Teacher, verbose_name=u'讲师', null=True, blank=True)
     notice = models.CharField(max_length=300, verbose_name=u'课程公告', default='')
     you_need_know = models.CharField(max_length=300, verbose_name=u'课程须知', default='')
