@@ -11,6 +11,7 @@ from django.views.generic.base import View
 
 from .models import UserProfile, EmailVerifyRecord
 from .forms import LoginForm, RegisterForm, ForgetPasswordForm, ModifyPasswordForm, UploadImageForm, UserInfoForm
+from operation.models import UserCourse
 from utils.email_send import send_register_email
 from utils.mixin_utils import LoginRequiredMixin
 
@@ -246,3 +247,11 @@ class UpdateEmailView(View):
             return HttpResponse('{"status": "success"}', content_type='application/json')
         else:
             return HttpResponse('{"email": "验证码无效"}', content_type='application/json')
+
+
+class MyCourseView(View):
+    """我的课程"""
+
+    def get(self, request):
+        user_courses = UserCourse.objects.filter(user=request.user)
+        return render(request, 'usercenter-mycourse.html', {'user_courses': user_courses})

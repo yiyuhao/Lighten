@@ -32,10 +32,10 @@
         <div class="wp list personal_list">
             <div class="left">
                 <ul>
-                    <li class="active2"><a href="usercenter-info.html">个人资料</a></li>
-                    <li><a href="usercenter-mycourse.html">我的课程</a></li>
-                    <li><a href="usercenter-fav-course.html">我的收藏</a></li>
-                    <li>
+                    <li{% if request.path|slice:'11' == '/users/info/' %} class="active2"{% endif %}><a href="{% url 'user:user_info' %}">个人资料</a></li>
+                    <li{% if request.path|slice:'18' == '/users/my_course/' %} class="active2"{% endif %}><a href="{% url 'user:my_course' %}">我的课程</a></li>
+                    <li{% if request.path|slice:'15' == '/users/my_fav/' %} class="active2"{% endif %}><a href="usercenter-fav-course.html">我的收藏</a></li>
+                    <li{% if request.path|slice:'15' == '/users/my_msg/' %} class="active2"{% endif %}>
                         <a href="usercenter-message.html" style="position: relative;">
                             我的消息
                         </a>
