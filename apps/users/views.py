@@ -264,9 +264,9 @@ class FavOrgView(View):
 
     def get(self, request):
         # (1, u'课程'), (2, u'课程机构'), (3, u'讲师')
-        user_favorites = UserFavorite.objects.filter(user=request.user, fav_type=2)
+        fav_records = UserFavorite.objects.filter(user=request.user, fav_type=2)
         user_fav_orgs = []
-        for i in user_favorites:
+        for i in fav_records:
             user_fav_orgs.append(CourseOrg.objects.get(id=i.fav_id))
         return render(request, 'usercenter-fav-org.html', {'user_fav_orgs': user_fav_orgs})
 
@@ -276,9 +276,9 @@ class FavTeacherView(View):
 
     def get(self, request):
         # (1, u'课程'), (2, u'课程机构'), (3, u'讲师')
-        user_favorites = UserFavorite.objects.filter(user=request.user, fav_type=3)
+        fav_records = UserFavorite.objects.filter(user=request.user, fav_type=3)
         user_fav_teachers = []
-        for i in user_favorites:
+        for i in fav_records:
             user_fav_teachers.append(Teacher.objects.get(id=i.fav_id))
         return render(request, 'usercenter-fav-teacher.html', {'user_fav_teachers': user_fav_teachers})
 
@@ -288,8 +288,8 @@ class FavCourseView(View):
 
     def get(self, request):
         # (1, u'课程'), (2, u'课程机构'), (3, u'讲师')
-        user_favorites = UserFavorite.objects.filter(fav_type=1)
+        fav_records = UserFavorite.objects.filter(fav_type=1)
         user_fav_courses = []
-        for i in user_favorites:
+        for i in fav_records:
             user_fav_courses.append(Course.objects.get(id=i.fav_id))
         return render(request, 'usercenter-fav-course.html', {'user_fav_courses': user_fav_courses})
