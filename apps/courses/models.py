@@ -51,6 +51,15 @@ class Course(models.Model):
         return self.lesson_set.all()
 
 
+class BannerCourse(Course):
+    """轮播课程(与course同一张表, 在xadmin中显示两个管理器方便操作)"""
+
+    class Meta:
+        verbose_name = u'轮播课程'
+        verbose_name_plural = verbose_name
+        proxy = True
+
+
 class Lesson(models.Model):
     name = models.CharField(max_length=100, verbose_name=u'章节名')
     course = models.ForeignKey(Course, verbose_name=u'课程')

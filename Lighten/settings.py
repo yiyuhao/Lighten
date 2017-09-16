@@ -28,11 +28,15 @@ SECRET_KEY = '_^gydutal#c-p)7&&5udlx#b9d$0%@^9ll%8teh!67ctsr483='
 
 # SECURITY WARNING: don't run with debug turned on in production!
 
-# DEBUG = True
-# ALLOWED_HOSTS = []
 
-DEBUG = False
-ALLOWED_HOSTS = ['*']
+DEBUG = True
+ALLOWED_HOSTS = []
+
+# # DEBUG=FALSE时设置static根目录
+# STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+# DEBUG = False
+# ALLOWED_HOSTS = ['*']
+
 
 # Application definition
 
@@ -180,5 +184,4 @@ EMAIL_FROM = EMAIL_HOST_USER
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# DEBUG=FALSE时设置static根目录
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+

@@ -1,6 +1,7 @@
 # coding: utf-8
 import xadmin
 from xadmin import views
+from xadmin.plugins.auth import UserAdmin
 
 from .models import UserProfile, EmailVerifyRecord, Banner
 
@@ -16,8 +17,8 @@ class GlobalSetting(object):
     menu_style = 'accordion'
 
 
-# class UserProfileAdmin(object):
-#     fields = ['nickname', 'birthday', 'gender', 'address', 'mobile', 'image', 'add_time']
+# class UserProfileAdmin(UserAdmin):
+#     fields = ['nickname', 'gender', 'address', 'mobile', 'image', 'add_time']
 #     list_display = fields
 #     list_filter = fields
 #     search_fields = fields[:]
@@ -41,5 +42,6 @@ class BannerAdmin(object):
 
 xadmin.site.register(EmailVerifyRecord, EmailVerifyRecordAdmin)
 xadmin.site.register(Banner, BannerAdmin)
+# xadmin.site.register(UserProfile, UserProfileAdmin)
 xadmin.site.register(views.BaseAdminView, BaseSetting)
 xadmin.site.register(views.CommAdminView, GlobalSetting)
