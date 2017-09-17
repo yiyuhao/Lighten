@@ -5,13 +5,15 @@ from datetime import datetime
 
 from django.db import models
 from organization.models import CourseOrg, Teacher
+from DjangoUeditor.models import UEditorField
 
 
 class Course(models.Model):
     name = models.CharField(max_length=50, verbose_name=u'课程名')
     course_org = models.ForeignKey(CourseOrg, verbose_name=u'课程机构', null=True, blank=True)
     desc = models.CharField(max_length=300, verbose_name=u'课程描述')
-    detail = models.TextField(verbose_name=u'课程详情')
+    detail = UEditorField(verbose_name=u'课程详情', width=600, height=300, imagePath="courses/ueditor/",
+                          filePath="courses/ueditor/", default='')
     is_banner = models.BooleanField(default=False, verbose_name=u'是否轮播')
     teacher = models.ForeignKey(Teacher, verbose_name=u'讲师', null=True, blank=True)
     notice = models.CharField(max_length=300, verbose_name=u'课程公告', default='')

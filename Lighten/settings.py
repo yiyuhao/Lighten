@@ -64,6 +64,8 @@ INSTALLED_APPS = [
     'captcha',
     # 三方库: django-pure-pagination
     'pure_pagination',
+    # DjangoUeditor
+    'DjangoUeditor',
 ]
 
 # django-pure-pagination配置

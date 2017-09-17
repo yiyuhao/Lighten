@@ -12,6 +12,8 @@ class CourseAdmin(object):
     search_fields.remove('add_time')
     ordering = ['-click_nums']
     readonly_fields = ['click_nums', 'students']
+    exclude = ['fav_nums']
+    style_fields = {'detail': 'ueditor'}
 
     def queryset(self):
         qs = super(CourseAdmin, self).queryset()

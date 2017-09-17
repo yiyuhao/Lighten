@@ -23,6 +23,7 @@ from users.views import LoginView, LogoutView, RegisterView, ActiveUserView, \
     ForgetPasswordView, ResetPasswordView, ModifyPasswordView, IndexView
 
 from Lighten.settings import MEDIA_ROOT
+
 # from Lighten.settings import MEDIA_ROOT, STATIC_ROOT
 
 urlpatterns = [
@@ -54,7 +55,10 @@ urlpatterns = [
     # url(r'^static/(?P<path>.*)$', serve, {'document_root': STATIC_ROOT}),
 
     # 个人中心url配置
-    url(r'^users/', include('users.urls', namespace='user'))
+    url(r'^users/', include('users.urls', namespace='user')),
+
+    # DjangoUeditor
+    url(r'^ueditor/', include('DjangoUeditor.urls')),
 ]
 
 # 全局404页面配置
