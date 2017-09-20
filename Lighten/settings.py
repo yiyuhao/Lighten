@@ -33,7 +33,7 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 # # DEBUG=FALSE时设置static根目录
-# STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')  # 部署时需要拉取所有static file到用一个目录
 # DEBUG = False
 # ALLOWED_HOSTS = ['*']
 
