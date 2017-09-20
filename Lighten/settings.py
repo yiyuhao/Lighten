@@ -29,13 +29,19 @@ SECRET_KEY = '_^gydutal#c-p)7&&5udlx#b9d$0%@^9ll%8teh!67ctsr483='
 # SECURITY WARNING: don't run with debug turned on in production!
 
 
-DEBUG = True
-ALLOWED_HOSTS = []
+# DEBUG = True
+# ALLOWED_HOSTS = []
 
-# # DEBUG=FALSE时设置static根目录
+# DEBUG=FALSE时设置static根目录
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')  # 部署时需要拉取所有static file到用一个目录
-# DEBUG = False
-# ALLOWED_HOSTS = ['*']
+DEBUG = False
+ALLOWED_HOSTS = ['*']
+
+# !!! DEBUG=FALSE时，static相关配置会自动失效，不会再代管static的页面访问
+STATIC_URL = '/static/'
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'static'),
+)
 
 
 # Application definition
@@ -167,12 +173,6 @@ USE_TZ = False
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
-
-# !!! DEBUG=FALSE时，static相关配置会自动失效，不会再代管static的页面访问
-STATIC_URL = '/static/'
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'static'),
-)
 
 # 邮箱配置
 EMAIL_HOST = 'smtp.sina.com'
