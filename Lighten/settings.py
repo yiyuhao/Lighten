@@ -124,9 +124,9 @@ WSGI_APPLICATION = 'Lighten.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': "lighten",
-        'USER': 'root',
-        'PASSWORD': 'root',
+        'NAME': os.environ.get('DB_NAME'),
+        'USER': os.environ.get('DB_USER'),
+        'PASSWORD': os.environ.get('DB_PASSWORD'),
         'HOST': '127.0.0.1',
         'OPTIONS': {
             "init_command": "SET foreign_key_checks=0;",
