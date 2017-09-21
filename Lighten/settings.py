@@ -133,7 +133,7 @@ DATABASES = {
         'NAME': os.environ.get('MYSQL_NAME'),
         'USER': 'root',
         'PASSWORD': os.environ.get('MYSQL_ENV_MYSQL_ROOT_PASSWORD'),
-        'HOST': 'MYSQL_PORT_3306_TCP_ADDR',
+        'HOST': os.environ.get('MYSQL_PORT_3306_TCP_ADDR'),
         'OPTIONS': {
             "init_command": "SET foreign_key_checks=0;",
         }
