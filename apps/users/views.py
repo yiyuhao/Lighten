@@ -110,7 +110,7 @@ class RegisterView(View):
             user.save()
             user.log('欢迎注册Lighten-中国成都市龙泉驿区北泉路最大的的在线教育网站')
             # 发送注册邮件
-            send_register_email(email, 'register')
+            send_register_email(email, 'register', request.get_host())
             return render(request, 'login.html')
         else:
             # 表单字段未验证通过
@@ -144,7 +144,7 @@ class ForgetPasswordView(View):
         forget_form = ForgetPasswordForm(request.POST)
         if forget_form.is_valid():
             email = request.POST.get('email')
-            send_register_email(email, 'forget')
+            send_register_email(email, 'forget', request.get_host())
             return render(request, 'send_success.html')
         return render(request, 'forgetpwd.html', {'forget_form': forget_form})
 
@@ -257,7 +257,7 @@ class SendEmailCodeView(LoginRequiredMixin, View):
         if UserProfile.objects.filter(email=new_email):
             return HttpResponse('{"email": "邮箱已经存在"}', content_type='application/json')
         send_register_email(email_to=request.user.email, send_type='update_email',
-                            user_new_email=new_email)
+                            user_new_email=new_email, host=request.get_host())
         return HttpResponse('{"status": "success"}', content_type='application/json')
 
 

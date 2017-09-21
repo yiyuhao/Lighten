@@ -27,12 +27,13 @@ def async_send_email(*args, **kwargs):
     th.start()
 
 
-def send_register_email(email_to, send_type='register', user_new_email=''):
+def send_register_email(email_to, send_type='register', user_new_email='', host='127.0.0.1:8000'):
     """
     发送确认邮件(注册或找回密码)
     :param email_to:         (str)   用户邮箱    '...@xx.com'
     :param send_type:        (str)   邮件类型    'register' 'forget' or 'update_email'
     :param user_new_email:   (str)   用户更新邮箱时的参数, 告诉用户将要修改的邮箱地址
+    :param host:             (str)   主机地址, 写入链接提供给用户
     :return:
     """
     # 随机字符串
@@ -49,11 +50,13 @@ def send_register_email(email_to, send_type='register', user_new_email=''):
     # 发送邮件
     if send_type == 'register':
         email_title = 'Lighten - 注册激活'
-        email_body = '请点击下面的链接激活你的账号: http://127.0.0.1:8000/active/{code}'.format(code=random_str)
+        email_body = '请点击下面的链接激活你的账号: ' \
+                     'http://{host}/active/{code}'.format(host=host, code=random_str)
 
     elif send_type == 'forget':
         email_title = 'Lighten - 密码重置'
-        email_body = '请点击下面的链接重置你的密码: http://127.0.0.1:8000/reset/{code}'.format(code=random_str)
+        email_body = '请点击下面的链接重置你的密码: ' \
+                     'http://{host}/reset/{code}'.format(host=host, code=random_str)
 
     elif send_type == 'update_email':
         email_title = 'Lighten - 邮箱修改验证码'
