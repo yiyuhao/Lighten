@@ -33,15 +33,15 @@ SECRET_KEY = '_^gydutal#c-p)7&&5udlx#b9d$0%@^9ll%8teh!67ctsr483='
 # ALLOWED_HOSTS = []
 
 # DEBUG=FALSE时设置static根目录
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')  # 部署时需要拉取所有static file到用一个目录
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/')  # 部署时需要拉取所有static file到用一个目录
 DEBUG = False
 ALLOWED_HOSTS = ['*']
 
 # !!! DEBUG=FALSE时，static相关配置会自动失效，不会再代管static的页面访问
 STATIC_URL = '/static/'
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'static'),
-)
+# STATICFILES_DIRS = (
+#     os.path.join(BASE_DIR, 'static'),
+# )
 
 
 # Application definition
@@ -130,10 +130,10 @@ WSGI_APPLICATION = 'Lighten.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.environ.get('DB_NAME'),
-        'USER': os.environ.get('DB_USER'),
-        'PASSWORD': os.environ.get('DB_PASSWORD'),
-        'HOST': '127.0.0.1',
+        'NAME': os.environ.get('MYSQL_NAME'),
+        'USER': 'root',
+        'PASSWORD': os.environ.get('MYSQL_ENV_MYSQL_ROOT_PASSWORD'),
+        'HOST': 'MYSQL_PORT_3306_TCP_ADDR',
         'OPTIONS': {
             "init_command": "SET foreign_key_checks=0;",
         }
