@@ -130,7 +130,7 @@ WSGI_APPLICATION = 'Lighten.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.environ.get('MYSQL_NAME'),
+        'NAME': os.environ.get('MYSQL_DATABASE_NAME'),
         'USER': 'root',
         'PASSWORD': os.environ.get('MYSQL_ENV_MYSQL_ROOT_PASSWORD'),
         'HOST': os.environ.get('MYSQL_PORT_3306_TCP_ADDR'),
@@ -176,7 +176,7 @@ USE_TZ = False
 
 # 邮箱配置
 EMAIL_HOST = 'smtp.sina.com'
-EMAIL_PORT = '25'
+EMAIL_PORT = '587'
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 EMAIL_USE_TLS = False
