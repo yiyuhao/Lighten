@@ -114,7 +114,7 @@ class RegisterView(View):
             return render(request, 'login.html')
         else:
             # 表单字段未验证通过
-            return render(request, 'register.html', {'register_form': register_form})
+            return render(request, 'register.html', {'register_form': register_form, 'msg': ''})
 
 
 class ActiveUserView(View):
