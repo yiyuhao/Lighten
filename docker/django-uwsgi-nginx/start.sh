@@ -21,4 +21,4 @@ docker run -itd \
            --name webapp-lighten \
            -p 80:80 \
        lighten \
-       sh -c 'python3 /home/docker/code/Lighten/manage.py migrate && supervisord -n'
+       sh -c 'python /home/docker/code/Lighten/manage.py migrate && supervisord -n'
