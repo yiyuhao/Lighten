@@ -14,6 +14,7 @@ if docker ps -a | grep -i lighten; then
     docker rm -f webapp-lighten
 fi
 
+echo 'run webapp-lighten..'
 docker run -itd \
            --link mysql:mysql \
            -v /root/git_repo/Lighten/:/home/docker/code/Lighten \
