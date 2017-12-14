@@ -16,7 +16,7 @@ fi
 
 echo 'run webapp-lighten..'
 docker run -itd \
-           --link mysql:mysql \
+           --link mysql-lighten:mysql \
            -v /root/git_repo/Lighten/:/home/docker/code/Lighten \
            --name webapp-lighten \
            -p 80:80 \
