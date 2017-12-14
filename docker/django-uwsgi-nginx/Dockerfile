@@ -20,13 +20,13 @@ RUN apt-get update && \
   	rm -rf /var/lib/apt/lists/*
 
 RUN pip install -i https://pypi.doubanio.com/simple/ uwsgi
-
-
+ 
+ 
 # 环境变量
 
 ENV MYSQL_DATABASE_NAME lighten
-ENV EMAIL_HOST_USER uestcyyh@sina.com
-ENV EMAIL_HOST_PASSWORD Teamyoumo888
+ENV EMAIL_HOST_USER myemail@email.com
+ENV EMAIL_HOST_PASSWORD my-secret-password
 
 
 # nginx、supervisor配置

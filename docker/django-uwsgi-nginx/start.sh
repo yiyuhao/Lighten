@@ -8,15 +8,14 @@ if ! docker images | grep lighten; then
 fi
 
 # 镜像存在时，检查容器是否存在
-if docker ps -a | grep -i webapp-lighten; then
+if docker ps -a | grep -i lighten; then
     # 容器存在时则删除容器
     echo 'The docker container <lighten> already exist, deleting it...'
     docker rm -f webapp-lighten
 fi
 
-# 启动容器
 docker run -itd \
-           --link mysql-lighten:mysql \
+           --link mysql:mysql \
            -v /root/git_repo/Lighten/:/home/docker/code/Lighten \
            --name webapp-lighten \
            -p 80:80 \
